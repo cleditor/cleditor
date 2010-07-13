@@ -1,6 +1,6 @@
 ﻿/*!
  * CLEditor - WYSIWYG HTML Editor
- * version: 1.0 (7/11/2010)
+ * version: 1.1 (7/13/2010)
  * @requires jQuery v1.4.2 or later
  *
  * Copyright 2010, Chris Landowski, Premium Software, LLC
@@ -107,7 +107,8 @@
     // Hide the textarea used to communicate with the server
     var $area = $("#" + areaID)
       .hide()
-      .blur($.proxy(this.updateFrame, this));
+      .keyup($.proxy(this.updateFrame, this))
+      .mouseup($.proxy(this.updateFrame, this));
         
     // Create the main div used to contain all editor elements and controls
     var $main = $("<div>")
@@ -199,8 +200,7 @@
 
     // Create an iframe used for wysiwyg editing
     var $frame = $('<iframe frameborder="0" src="javascript:true;">')
-      .appendTo($main)
-      .blur($.proxy(this.updateTextArea, this));
+      .appendTo($main);
 
     // Load the iframe content
     var doc = $frame[0].contentWindow.document;
@@ -211,6 +211,10 @@
     // Switch the iframe into design mode (ie6 does not support designMode)
     if (ie6) doc.body.contentEditable = true;
     else doc.designMode = "on";
+
+    // Keep iframe and textarea insync
+    $(doc).keyup($.proxy(this.updateTextArea, this));
+    $(doc).mouseup($.proxy(this.updateTextArea, this));
 
     // Update the new object and add it to the DOM
     this.$main = $main;
@@ -239,6 +243,12 @@
   //===============
   // Public Methods
   //===============
+
+  // execCommand - executes a designmode command
+  $.cleditor.prototype.execCommand = function(command, val) {
+    this.doc.execCommand(command, 0, val);
+    this.updateTextArea();
+  }
 
   // focus - Sets focus to either the textarea or iframe
   $.cleditor.prototype.focus = function() {
@@ -276,7 +286,7 @@
   $.cleditor.prototype.select = function() {
     setTimeout($.proxy(function() {
       if (this.htmlMode()) this.$area.select();
-      else this.doc.execCommand("selectall", 0, null);
+      else this.execCommand("selectall", null);
     }, this), 0);
   };
 
@@ -315,7 +325,6 @@
 
       // Show the iframe
       if (htmlMode) {
-        this.updateFrame();
         this.$area.hide();
         this.$frame.show();
         e.target.title = "Show HTML";
@@ -323,7 +332,6 @@
 
       // Show the textarea
       else {
-        this.updateTextArea();
         this.$frame.hide();
         this.$area.show();
         e.target.title = "Show Rich Text";
@@ -354,7 +362,7 @@
       else if (buttonID == "image") {
         url = prompt("Enter Image URL:", "http://");
         if (url !== null && url != '')
-          this.doc.execCommand(parms[2], 0, url);
+          this.execCommand(parms[2], url);
       }
 
       // Link
@@ -366,7 +374,7 @@
         }
         url = prompt("Enter Link URL:", "http://");
         if (url !== null && url != '')
-          this.doc.execCommand(parms[2], 0, url);
+          this.execCommand(parms[2], url);
       }
 
       // Print
@@ -375,7 +383,7 @@
 
       // Handle all other buttons
       else if (!htmlMode)
-        this.doc.execCommand(parms[2], 0, parms[3] || null);
+        this.execCommand(parms[2], parms[3] || null);
 
     }
 
@@ -421,14 +429,14 @@
         if ($.browser.msie)
           command = 'backcolor';
         else {
-          this.doc.execCommand("styleWithCSS", 0, "true");
-          this.doc.execCommand(command, 0, val);
-          this.doc.execCommand("styleWithCSS", 0, "false");
+          this.execCommand("styleWithCSS", "true");
+          this.execCommand(command, val);
+          this.execCommand("styleWithCSS", "false");
           this.focus();
           return;
         }
       }
-      this.doc.execCommand(command, 0, val);
+      this.execCommand(command, val);
       this.focus();
 
     }

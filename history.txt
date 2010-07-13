@@ -1,0 +1,7 @@
+﻿Version 1.0 (7/11/2010)
+* Initial release
+
+Version 1.1 (7/13/2010)
+* The onkeyup and onmouseup events are now used to keep the editor and textarea
+  in sync. Previously, the onblur event was used and was not consistantly
+  being fired across all browsers.
