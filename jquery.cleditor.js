@@ -1,5 +1,5 @@
 ﻿/**
- @preserve CLEditor WYSIWYG HTML Editor v1.2.2
+ @preserve CLEditor WYSIWYG HTML Editor v1.2.3
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
 
@@ -28,7 +28,7 @@
                     "bold italic underline strikethrough subscript superscript | font size " +
                     "style | color highlight removeformat | bullets numbering | outdent " +
                     "indent | alignleft center alignright justify | undo redo | " +
-                    "rule image link unlink | cut copy paste | print html",
+                    "rule image link unlink | cut copy paste pastetext | print html",
       colors:       // colors in the color popup
                     "FFF FCC FC9 FF9 FFC 9F9 9FF CFF CCF FCF " +
                     "CCC F66 F96 FF6 FF3 6F9 3FF 6FF 99F F9F " +
@@ -47,6 +47,8 @@
                     ["Header 3", "<h3>"],  ["Header 4","<h4>"],  ["Header 5","<h5>"],
                     ["Header 6","<h6>"]],
       useCSS:       false, // use CSS to style HTML when possible (not supported in ie)
+      docType:      // Document type contained within the editor
+                    '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
       docCSSFile:   // CSS file used to style the document contained within the editor.
                     "", 
       bodyStyle:    // style to assign to document body contained within the editor
@@ -89,6 +91,7 @@
       "cut,,|" +
       "copy,,|" +
       "paste,,|" +
+      "pastetext,Paste as Text,inserthtml,|" +
       "print,,|" +
       "html,Show HTML"
     },
@@ -140,6 +143,7 @@
   TOOLBAR_CLASS    = CLEDITOR + "Toolbar", // toolbar div inside main div
   GROUP_CLASS      = CLEDITOR + "Group",   // group divs inside the toolbar div
   BUTTON_CLASS     = CLEDITOR + "Button",  // button divs inside group div
+  DISABLED_CLASS   = CLEDITOR + "Disabled",// disabled button divs
   DIVIDER_CLASS    = CLEDITOR + "Divider", // divider divs inside group div
   POPUP_CLASS      = CLEDITOR + "Popup",   // popup divs inside body
   LIST_CLASS       = CLEDITOR + "List",    // list popup divs inside body
@@ -351,7 +355,7 @@
         popup = popups[popupName];
 
     // Check if disabled
-    if (editor.disabled)
+    if (editor.disabled || $(buttonDiv).attr(DISABLED) == DISABLED)
       return;
 
     // Fire the buttonClick event
@@ -387,6 +391,10 @@
         editor.$area.show();
         buttonDiv.title = "Show Rich Text";
       }
+
+      // Enable or disable the toolbar buttons
+      // IE requires the timeout
+      setTimeout(function() {refreshButtons(editor);}, 100);
 
     }
 
@@ -426,6 +434,29 @@
 
         }
 
+        // Paste as Text
+        else if (popupName == "pastetext") {
+
+          // Wire up the submit button click event handler
+          $popup.children(":button")
+            .unbind(CLICK)
+            .bind(CLICK, function() {
+
+              // Insert the unformatted text replacing new lines with break tags
+              var $textarea = $popup.find("textarea"),
+                text = $textarea.val().replace(/\n/g, "<br />");
+              if (text != "")
+                execCommand(editor, data.command, text, null, data.button);
+
+              // Reset the text, hide the popup and set focus
+              $textarea.val("");
+              hidePopups();
+              focus(editor);
+
+            });
+
+        }
+
         // Show the popup if not already showing for this button
         if (buttonDiv !== $(popup).data(BUTTON)) {
           showPopup(editor, popup, buttonDiv);
@@ -445,13 +476,6 @@
       else if (!execCommand(editor, data.command, data.value, data.useCSS, buttonDiv))
         return false;
 
-    }
-
-    // Check for button clicks in html mode
-    else {
-      showMessage(editor, "The '" + button.title + 
-      "' button is not allowed when viewing HTML.", buttonDiv);
-      return false;
     }
 
     // Focus the editor
@@ -492,7 +516,8 @@
 
     // Get the command value
     if (buttonName == "font")
-      value = target.style.fontFamily;
+      // Opera returns the fontfamily wrapped in quotes
+      value = target.style.fontFamily.replace(/"/g, "");
     else if (buttonName == "size") {
       if (target.tagName == "DIV")
         target = target.children[0];
@@ -602,6 +627,12 @@
       popupTypeClass = PROMPT_CLASS;
     }
 
+    // Paste as Text
+    else if (popupName == "pastetext") {
+      $popup.html('Paste your content here and click submit.<br /><textarea cols=40 rows=3></textarea><br /><input type=button value=Submit>');
+      popupTypeClass = PROMPT_CLASS;
+    }
+
     // Add the popup type class name
     if (!popupTypeClass && !popupContent)
       popupTypeClass = LIST_CLASS;
@@ -648,6 +679,9 @@
     // when toggling designMode from off to on.
     catch (err) {}
 
+    // Enable or disable the toolbar buttons
+    refreshButtons(editor);
+
   }
 
   // execCommand - executes a designMode command
@@ -684,8 +718,9 @@
       }
     }
 
-    // Sync up the textarea
+    // Sync up the textarea and enable the buttons
     updateTextArea(editor);
+    refreshButtons(editor);
     return success;
 
   }
@@ -753,11 +788,14 @@
     // Load the iframe document content
     var doc = $frame[0].contentWindow.document;
     doc.open();
-    doc.write('<html>' +
-      options.docCSSFile == '' ? '' : '<head><link rel="stylesheet" type="text/css" href="' + options.docCSSFile + '" /></head>' +
+    doc.write(
+      options.docType +
+      '<html>' +
+      ((options.docCSSFile == '') ? '' : '<head><link rel="stylesheet" type="text/css" href="' + options.docCSSFile + '" /></head>') +
       '<body style="' + options.bodyStyle + '">' +
       editor.$area.val() +
-      '</body></html>');
+      '</body></html>'
+    );
     doc.close();
 
     // Define the cleditor properties
@@ -788,6 +826,7 @@
     // Bind the iframe document event handlers
     $(doc).click(hidePopups)
       .bind("keyup mouseup", function() {
+        refreshButtons(editor);
         updateTextArea(editor);
       });
 
@@ -809,8 +848,67 @@
       $frame.width(wid).height(hgt);
       editor.$area.width(wid).height(ie6 ? hgt - 2 : hgt);
 
-    }, 0);
+      // Enable or disable the toolbar buttons
+      refreshButtons(editor);
 
+    }, 100);
+
+  }
+
+  // refreshButtons - enables or disables buttons based on availability
+  function refreshButtons(editor) {
+
+    // Loop through each button
+    $.each(editor.$toolbar.find("." + BUTTON_CLASS), function(idx, elem) {
+
+      var $elem = $(elem),
+        button = $.cleditor.buttons[$elem.data(BUTTON_NAME)];
+        command = button.command,
+        enabled = true;
+
+      // Determine the state
+      if (editor.disabled)
+        enabled = false;
+      else if (button.getEnabled) {
+        var data = {
+          editor: editor,
+          button: $elem[0],
+          buttonName: button.name,
+          popup: popups[button.popupName],
+          popupName: button.popupName,
+          command: button.command,
+          value: null,
+          useCSS: editor.options.useCSS
+        };
+        enabled = button.getEnabled(data);
+        if (enabled == undefined)
+          enabled = true;
+      }
+      else if ((htmlMode(editor) && button.name != "html") ||
+      (ie && (command == "undo" || command == "redo")))
+        enabled = false;
+      else if (command && command != "print") {
+        if (ie && command == "hilitecolor")
+          command = "backcolor";
+        // IE does not support inserthtml, so it's always enabled
+        if (!ie || command != "inserthtml") {
+          try {enabled = editor.doc.queryCommandEnabled(command);}
+          catch (err) {enabled = false;}
+        }
+      }
+
+      // Enable or disable the button
+      if (enabled) {
+        $elem.removeClass(DISABLED_CLASS);
+        $elem.removeAttr(DISABLED);
+      }
+      else {
+        $elem.addClass(DISABLED_CLASS);
+        $elem.attr(DISABLED, DISABLED);
+      }
+      $elem.css(BACKGROUND_COLOR, "transparent");
+
+    });
   }
 
   // select - selects all the text in either the textarea or iframe
@@ -866,7 +964,7 @@
 
     // Focus the first input element if any
     setTimeout(function() {
-      $popup.find(":text:first").focus().select();
+      $popup.find(":text,textarea:first").focus().select();
     }, 100);
 
   }
