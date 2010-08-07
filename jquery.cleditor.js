@@ -1,5 +1,5 @@
 ﻿/**
- @preserve CLEditor WYSIWYG HTML Editor v1.2.3
+ @preserve CLEditor WYSIWYG HTML Editor v1.2.4
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
 
@@ -317,6 +317,7 @@
     ["htmlMode", htmlMode, true],
     ["refresh", refresh],
     ["select", select],
+    ["selectedHTML", selectedHTML, true],
     ["selectedText", selectedText, true],
     ["showMessage", showMessage],
     ["updateFrame", updateFrame],
@@ -688,8 +689,7 @@
   function execCommand(editor, command, value, useCSS, button) {
 
     // Restore the current ie selection
-    if (ie && editor.range)
-      editor.range.select();
+    restoreRange(editor);
 
     // Set the styling method
     if (!ie) {
@@ -742,6 +742,7 @@
     setTimeout(function() {
       if (htmlMode(editor)) editor.$area.focus();
       else editor.$frame[0].contentWindow.focus();
+      refreshButtons(editor);
     }, 0);
   }
 
@@ -797,6 +798,11 @@
       '</body></html>'
     );
     doc.close();
+
+    // Work around for bug in IE which causes the editor to lose focus when
+    // clicking below the end of the document.
+    if (ie)
+      $(doc).click(function() {focus(editor);});
 
     // Define the cleditor properties
     editor.$frame = $frame;
@@ -911,6 +917,12 @@
     });
   }
 
+  // restoreRange - restores the current ie selection
+  function restoreRange(editor) {
+    if (ie && editor.range)
+      editor.range.select();
+  }
+
   // select - selects all the text in either the textarea or iframe
   function select(editor) {
     setTimeout(function() {
@@ -919,8 +931,22 @@
     }, 0);
   }
 
+  // selectedHTML - returns the current HTML selection or and empty string
+  function selectedHTML(editor) {
+    restoreRange(editor);
+    if (ie)
+      return editor.doc.selection.createRange().htmlText;
+    var range = editor.$frame[0].contentWindow.getSelection().getRangeAt(0),
+      layer = $("<layer>")[0];
+    layer.appendChild(range.cloneContents());
+    var html = layer.innerHTML;
+    layer = null;
+    return html;
+  }
+
   // selectedText - returns the current text selection or and empty string
   function selectedText(editor) {
+    restoreRange(editor);
     if (ie) return editor.doc.selection.createRange().text;
     return editor.$frame[0].contentWindow.getSelection();
   }
