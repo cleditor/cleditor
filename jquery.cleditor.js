@@ -20,7 +20,7 @@
 
   $.cleditor = {
 
-    // ● Define the defaults used for all new cleditor instances
+    // Define the defaults used for all new cleditor instances
     defaultOptions: {
       width:        500, // width not including margins, borders or padding
       height:       250, // height not including margins, borders or padding
@@ -51,7 +51,7 @@
                     "margin:4px; font:10pt Arial,Verdana; cursor:text"
     },
 
-    // ● Define all usable toolbar buttons - the init string property is 
+    // Define all usable toolbar buttons - the init string property is 
     //   expanded during initialization back into the buttons object and 
     //   seperate object properties are created for each button.
     //   e.g. buttons.size.title = "Font Size"
@@ -91,12 +91,12 @@
       "html,Show HTML"
     },
 
-    // ● imagesPath - returns the path to the images folder
+    // imagesPath - returns the path to the images folder
     imagesPath: function() { return imagesPath(); }
 
   };
 
-  // ● cleditor - creates a new editor for each of the matched textareas
+  // cleditor - creates a new editor for each of the matched textareas
   $.fn.cleditor = function(options) {
 
     // Create a new jQuery object to hold the results
@@ -122,7 +122,7 @@
 
   var
 
-  // ● Misc constants
+  // Misc constants
   BACKGROUND_COLOR = "backgroundColor",
   BUTTON           = "button",
   BUTTON_NAME      = BUTTON + "Name",
@@ -137,7 +137,7 @@
   STYLE            = "style",
   UNSELECTABLE     = "unselectable",
 
-  // ● Class name constants
+  // Class name constants
   MAIN_CLASS       = CLEDITOR + "Main",    // main containing div
   TOOLBAR_CLASS    = CLEDITOR + "Toolbar", // toolbar div inside main div
   GROUP_CLASS      = CLEDITOR + "Group",   // group divs inside the toolbar div
@@ -149,23 +149,23 @@
   PROMPT_CLASS     = CLEDITOR + "Prompt",  // prompt popup divs inside body
   MSG_CLASS        = CLEDITOR + "Msg",     // message popup div inside body
 
-  // ● Test for internet explorer 6
+  // Test for internet explorer 6
   ie6 = /msie\s6/i.test(navigator.userAgent),
 
-  // ● Popups are created once as needed and shared by all editor instances
+  // Popups are created once as needed and shared by all editor instances
   popups = {},
 
-  // ● Used to prevent the document click event from being bound more than once
+  // Used to prevent the document click event from being bound more than once
   documentClickAssigned,
 
-  // ● Local copy of the buttons object
+  // Local copy of the buttons object
   buttons = $.cleditor.buttons;
 
   //===============
   // Initialization
   //===============
 
-  // ● Expand the buttons.init string back into the buttons object
+  // Expand the buttons.init string back into the buttons object
   //   and create seperate object properties for each button.
   //   e.g. buttons.size.title = "Font Size"
   $.each(buttons.init.split("|"), function(idx, button) {
@@ -184,7 +184,7 @@
   // Constructor
   //============
 
-  // ● cleditor - creates a new editor for the passed in textarea element
+  // cleditor - creates a new editor for the passed in textarea element
   cleditor = function(area, options) {
 
     var editor = this;
@@ -312,9 +312,13 @@
       .click(hidePopups)
       .bind("keyup mouseup", function() {updateTextArea(editor);});
 
-    // Add a document.click event handler to dismiss popups
+    // Add a document.click event handler to dismiss all non-prompt popups
     if (!documentClickAssigned) {
-      $(document).click(hidePopups);
+      $(document).click(function(e) {
+        var $target = $(e.target);
+        if (!$target.add($target.parents()).is("." + PROMPT_CLASS))
+          hidePopups();
+      });
       documentClickAssigned = true;
     }
 
@@ -333,7 +337,9 @@
 
   var fn = cleditor.prototype,
 
-  // ● Expose the following private functions as methods on the cleditor object
+  // Expose the following private functions as methods on the cleditor object.
+  // The closure compiler will rename the private functions. However, the
+  // exposed method names on the cleditor object will remain fixed.
   methods = [
     ["clear", clear],
     ["disable", disable],
@@ -361,7 +367,7 @@
     };
   });
 
-  // ● change - shortcut for .bind("change", handler) or .trigger("change")
+  // change - shortcut for .bind("change", handler) or .trigger("change")
   fn.change = function(handler) {
     var $this = $(this);
     return handler ? $this.bind(CHANGE, handler) : $this.trigger(CHANGE);
@@ -371,7 +377,7 @@
   // Event Handlers
   //===============
 
-  // ● buttonClick - click event handler for toolbar buttons
+  // buttonClick - click event handler for toolbar buttons
   function buttonClick(e) {
 
     var editor = this,
@@ -453,7 +459,7 @@
 
               // Reset the text, hide the popup and set focus
               $text.val("http://");
-              hidePopups(editor);
+              hidePopups();
               focus(editor);
 
             });
@@ -493,7 +499,7 @@
 
   }
 
-  // ● hoverEnter - mouseenter event handler for buttons and popup items
+  // hoverEnter - mouseenter event handler for buttons and popup items
   function hoverEnter(e) {
     var elem = e.target;
     while (elem.tagName != "DIV") elem = elem.parentNode;
@@ -502,14 +508,14 @@
     $elem.css(BACKGROUND_COLOR, color);
   }
 
-  // ● hoverLeave - mouseleave event handler for buttons and popup items
+  // hoverLeave - mouseleave event handler for buttons and popup items
   function hoverLeave(e) {
     var elem = e.target;
     while (elem.tagName != "DIV") elem = elem.parentNode;
     $(elem).css(BACKGROUND_COLOR, "transparent");
   }
 
-  // ● popupClick - click event handler for popup items
+  // popupClick - click event handler for popup items
   function popupClick(e) {
 
     var editor = this,
@@ -517,12 +523,8 @@
         $popup = $(popup),
         target = e.target;
 
-    // Do not allow document clicks to hide prompt popups
-    if ($popup.hasClass(PROMPT_CLASS))
-      return false;
-
-    // Check for message popup
-    if (popup === popups.msg) 
+    // Check for message and prompt popups
+    if (popup === popups.msg || $popup.hasClass(PROMPT_CLASS))
       return;
 
     // Get the button info
@@ -536,8 +538,11 @@
     // Get the command value
     if (buttonName == FONT)
       value = target.style.fontFamily;
-    else if (buttonName == SIZE)
+    else if (buttonName == SIZE) {
+      if (target.tagName == "DIV")
+        target = target.children[0];
       value = target.innerHTML;
+    }
     else if (buttonName == STYLE)
       value = "<" + target.tagName + ">";
     else if (buttonName == COLOR)
@@ -567,7 +572,8 @@
     if (data.command && !execCommand(editor, data.command, data.value, data.useCSS, buttonDiv))
       return false;
 
-    // Focus the editor
+    // Hide the popup and focus the editor
+    hidePopups();
     focus(editor);
 
   }
@@ -576,13 +582,13 @@
   // Private Functions
   //==================
 
-  // ● clear - clears the contents of the editor
+  // clear - clears the contents of the editor
   function clear(editor) {
     editor.$area.val("");
     updateFrame(editor);
   }
 
-  // ● createPopup - creates a popup and adds it to the body
+  // createPopup - creates a popup and adds it to the body
   function createPopup(popupName, options, popupTypeClass, popupContent, popupHover) {
 
     // Check if popup already exists
@@ -601,7 +607,10 @@
 
     // Color
     else if (popupName == COLOR) {
-      $.each(options.colors.split(" "), function(idx, color) {
+      var colors = options.colors.split(" ");
+      if (colors.length < 10)
+        $popup.width("auto");
+      $.each(colors, function(idx, color) {
         $(DIV_TAG).appendTo($popup)
           .css(BACKGROUND_COLOR, "#" + color);
       });
@@ -658,7 +667,7 @@
 
   }
 
-  // ● disable - enables or disables the editor
+  // disable - enables or disables the editor
   function disable(editor, disabled) {
 
     // Update the textarea and save the state
@@ -680,11 +689,11 @@
     }
     // Firefox 1.5 throws an exception that can be ignored
     // when toggling designMode from off to on.
-    catch (ex) {}
+    catch (err) {}
 
   }
 
-  // ● Returns the hex value for the passed in string.
+  // Returns the hex value for the passed in string.
   //   hex("rgb(255, 0, 0)"); // #FF0000
   //   hex("#FF0000"); // #FF0000
   function hex(c) {
@@ -692,7 +701,7 @@
     return m ? '#' + ( m[1] << 16 | m[2] << 8 | m[3] ).toString(16) : c;
   }
 
-  // ● execCommand - executes a designMode command
+  // execCommand - executes a designMode command
   function execCommand(editor, command, value, useCSS, button) {
 
     // Set the styling method
@@ -703,14 +712,22 @@
     }
 
     // Execute the command and check for error
-    var success = true;
+    var success = true, description;
     if (command.toLowerCase() == "inserthtml" && $.browser.msie)
       editor.doc.selection.createRange().pasteHTML(value);
     else {
       try { success = editor.doc.execCommand(command, 0, value || null); }
-      catch (ex) { success = false; }
-      if (!success)
-        showMessage(editor, "Your browser does not support this feature.", button);
+      catch (err) { description = err.description; success = false; }
+      if (!success) {
+        if ("cutcopypaste".indexOf(command) > -1)
+          showMessage(editor, "For security reasons, your browser does not support the " +
+            command + " command. Try using the keyboard shortcut or context menu instead.",
+            button);
+        else
+          showMessage(editor,
+            (description ? description : "Error executing the " + command + " command."),
+            button);
+      }
     }
 
     // Sync up the textarea
@@ -719,7 +736,7 @@
 
   }
 
-  // ● focus - sets focus to either the textarea or iframe
+  // focus - sets focus to either the textarea or iframe
   function focus(editor) {
     setTimeout(function() {
       if (htmlMode(editor)) editor.$area.focus();
@@ -727,7 +744,7 @@
     }, 0);
   }
 
-  // ● hidePopups - hides all popups
+  // hidePopups - hides all popups
   function hidePopups() {
     $.each(popups, function(idx, popup) {
       $(popup)
@@ -737,24 +754,24 @@
     });
   }
 
-  // ● htmlMode - returns true if the textarea is showing
+  // htmlMode - returns true if the textarea is showing
   function htmlMode(editor) {
     return editor.$frame.css("display") == "none";
   }
 
-  // ● imagesPath - returns the path to the images folder
+  // imagesPath - returns the path to the images folder
   function imagesPath() {
     var cssFile = "jquery.cleditor.css",
         href = $("link[href$='" + cssFile +"']").attr("href");
     return href.substr(0, href.length - cssFile.length) + "images/";
   }
 
-  // ● imageUrl - Returns the css url string for a filemane
+  // imageUrl - Returns the css url string for a filemane
   function imageUrl(filename) {
     return "url(" + imagesPath() + filename + ")";
   }
 
-  // ● resizeControls - resizes the toolbar, textarea and iframe
+  // resizeControls - resizes the toolbar, textarea and iframe
   function resizeControls(editor) {
 
     // Update the toolbar height
@@ -773,7 +790,7 @@
 
   }
 
-  // ● restoreSelection - restores the current iframe selection
+  // restoreSelection - restores the current iframe selection
   function restoreSelection(editor) {
     if (editor.range) {
       editor.range.select();
@@ -781,7 +798,7 @@
     }
   }
 
-  // ● select - selects all the text in either the textarea or iframe
+  // select - selects all the text in either the textarea or iframe
   function select(editor) {
     setTimeout(function() {
       if (htmlMode(editor)) editor.$area.select();
@@ -789,20 +806,20 @@
     }, 0);
   }
 
-  // ● selectedText - returns the current text selection or and empty string
+  // selectedText - returns the current text selection or and empty string
   function selectedText(editor) {
     if ($.browser.msie) return editor.doc.selection.createRange().text;
     return editor.$frame[0].contentWindow.getSelection();
   }
 
-  // ● showMessage - alert replacement
+  // showMessage - alert replacement
   function showMessage(editor, message, button) {
     var popup = createPopup("msg", editor.options, MSG_CLASS);
     popup.innerHTML = message;
     showPopup(editor, popup, button);
   }
 
-  // ● showPopup - shows a popup
+  // showPopup - shows a popup
   function showPopup(editor, popup, button) {
 
     var offset, left, top, $popup = $(popup);
@@ -848,16 +865,24 @@
 
   }
 
-  // ● updateFrame - updates the iframe with the textarea contents
+  // updateFrame - updates the iframe with the textarea contents
   function updateFrame(editor) {
+    
+    // Check for change
     var val = editor.$area.val(), $body = $(editor.doc.body);
     if (val != $body.html()) {
+    
+      // Prevent script injection attacks by html encoding script tags
+      val = val.replace(/<(?=\/?script)/ig, "&lt;");
+      
+      // Update the editor
       $body.html(val);
       $(editor).triggerHandler(CHANGE);
+
     }
   }
 
-  // ● updateTextArea - updates the textarea with the iframe contents
+  // updateTextArea - updates the textarea with the iframe contents
   function updateTextArea(editor) {
     var html = $(editor.doc.body).html(), $area = editor.$area;
     if (html != $area.val()) {
