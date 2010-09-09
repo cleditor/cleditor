@@ -1,5 +1,5 @@
 ﻿/**
- @preserve CLEditor WYSIWYG HTML Editor v1.2.4
+ @preserve CLEditor WYSIWYG HTML Editor v1.2.5
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
 
@@ -700,9 +700,8 @@
 
     // Execute the command and check for error
     var success = true, description;
-    if (command.toLowerCase() == "inserthtml" && ie) {
+    if (ie && command.toLowerCase() == "inserthtml")
       editor.doc.selection.createRange().pasteHTML(value);
-    }
     else {
       try { success = editor.doc.execCommand(command, 0, value || null); }
       catch (err) { description = err.description; success = false; }
@@ -814,17 +813,38 @@
     // Bind the ie specific iframe event handlers
     if (ie) {
 
-      // Save the selection when it changes  
-      $(doc).bind("beforedeactivate beforeactivate selectionchange", function(e) {
-        if (e.type == "beforedeactivate") editor.skip = true;
-        else if (e.type == "beforeactivate") delete editor.skip;
-        else if (!editor.skip) editor.range = doc.selection.createRange();
+      // Save the current user selection. This code is needed since IE will
+      // reset the selection just after the beforedeactivate event and just
+      // before the beforeactivate event.
+      $(doc).bind("beforedeactivate beforeactivate selectionchange keypress", function(e) {
+        
+        // Flag the editor as inactive
+        if (e.type == "beforedeactivate")
+          editor.inactive = true;
+        
+        // Get rid of the bogus selection and flag the editor as active
+        else if (e.type == "beforeactivate") {
+          if (!editor.inactive && editor.range.length > 1)
+            editor.range.shift();
+          delete editor.inactive;
+        }
+
+        // Save the selection when the editor is active
+        else if (!editor.inactive) {
+          if (!editor.range) 
+            editor.range = [];
+          editor.range.unshift(doc.selection.createRange());
+
+          // We only need the last 2 selections
+          while (editor.range.length > 2)
+            editor.range.pop();
+        }
+
       });
 
-      // Restore the selection when the iframe gains focus
+      // Restore the text range when the iframe gains focus
       $frame.focus(function() {
-        if (editor.range)
-          editor.range.select();
+        restoreRange(editor);
       });
 
     }
@@ -920,7 +940,7 @@
   // restoreRange - restores the current ie selection
   function restoreRange(editor) {
     if (ie && editor.range)
-      editor.range.select();
+      editor.range[0].select();
   }
 
   // select - selects all the text in either the textarea or iframe
