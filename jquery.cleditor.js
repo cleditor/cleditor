@@ -1,5 +1,5 @@
 ﻿/**
- @preserve CLEditor WYSIWYG HTML Editor v1.2.5
+ @preserve CLEditor WYSIWYG HTML Editor v1.2.6
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
 
@@ -701,7 +701,7 @@
     // Execute the command and check for error
     var success = true, description;
     if (ie && command.toLowerCase() == "inserthtml")
-      editor.doc.selection.createRange().pasteHTML(value);
+      getRange(editor).pasteHTML(value);
     else {
       try { success = editor.doc.execCommand(command, 0, value || null); }
       catch (err) { description = err.description; success = false; }
@@ -722,6 +722,12 @@
     refreshButtons(editor);
     return success;
 
+  }
+
+  // getRange - gets the current text range object
+  function getRange(editor) {
+    if (ie) return editor.doc.selection.createRange();
+    return editor.$frame[0].contentWindow.getSelection().getRangeAt(0);
   }
 
   // Returns the hex value for the passed in string.
@@ -786,7 +792,8 @@
       .appendTo($main);
 
     // Load the iframe document content
-    var doc = $frame[0].contentWindow.document;
+    var doc = $frame[0].contentWindow.document,
+      $doc = $(doc);
     doc.open();
     doc.write(
       options.docType +
@@ -801,7 +808,7 @@
     // Work around for bug in IE which causes the editor to lose focus when
     // clicking below the end of the document.
     if (ie)
-      $(doc).click(function() {focus(editor);});
+      $doc.click(function() {focus(editor);});
 
     // Define the cleditor properties
     editor.$frame = $frame;
@@ -816,7 +823,7 @@
       // Save the current user selection. This code is needed since IE will
       // reset the selection just after the beforedeactivate event and just
       // before the beforeactivate event.
-      $(doc).bind("beforedeactivate beforeactivate selectionchange keypress", function(e) {
+      $doc.bind("beforedeactivate beforeactivate selectionchange keypress", function(e) {
         
         // Flag the editor as inactive
         if (e.type == "beforedeactivate")
@@ -824,7 +831,7 @@
         
         // Get rid of the bogus selection and flag the editor as active
         else if (e.type == "beforeactivate") {
-          if (!editor.inactive && editor.range.length > 1)
+          if (!editor.inactive && editor.range && editor.range.length > 1)
             editor.range.shift();
           delete editor.inactive;
         }
@@ -833,7 +840,7 @@
         else if (!editor.inactive) {
           if (!editor.range) 
             editor.range = [];
-          editor.range.unshift(doc.selection.createRange());
+          editor.range.unshift(getRange(editor));
 
           // We only need the last 2 selections
           while (editor.range.length > 2)
@@ -850,14 +857,14 @@
     }
 
     // Bind the iframe document event handlers
-    $(doc).click(hidePopups)
+    $doc.click(hidePopups)
       .bind("keyup mouseup", function() {
         refreshButtons(editor);
         updateTextArea(editor);
       });
 
     // Wait for the layout to finish
-    setTimeout(function() {
+    $doc.ready(function() {
 
       // Update the toolbar height
       var $toolbar = editor.$toolbar,
@@ -877,12 +884,23 @@
       // Enable or disable the toolbar buttons
       refreshButtons(editor);
 
-    }, 100);
+    });
 
   }
 
   // refreshButtons - enables or disables buttons based on availability
   function refreshButtons(editor) {
+
+    // Webkit requires focus before queryCommandEnabled will return anything but false
+    if ($.browser.webkit && !editor.focused) {
+      editor.$frame[0].contentWindow.focus();
+      window.focus();
+      editor.focused = true;
+    }
+
+    // Get the object used for checking queryCommandEnabled
+    var queryObj = editor.doc;
+    if (ie) queryObj = getRange(editor);
 
     // Loop through each button
     $.each(editor.$toolbar.find("." + BUTTON_CLASS), function(idx, elem) {
@@ -918,7 +936,7 @@
           command = "backcolor";
         // IE does not support inserthtml, so it's always enabled
         if (!ie || command != "inserthtml") {
-          try {enabled = editor.doc.queryCommandEnabled(command);}
+          try {enabled = queryObj.queryCommandEnabled(command);}
           catch (err) {enabled = false;}
         }
       }
@@ -954,10 +972,10 @@
   // selectedHTML - returns the current HTML selection or and empty string
   function selectedHTML(editor) {
     restoreRange(editor);
+    var range = getRange(editor);
     if (ie)
-      return editor.doc.selection.createRange().htmlText;
-    var range = editor.$frame[0].contentWindow.getSelection().getRangeAt(0),
-      layer = $("<layer>")[0];
+      return range.htmlText;
+    var layer = $("<layer>")[0];
     layer.appendChild(range.cloneContents());
     var html = layer.innerHTML;
     layer = null;
@@ -967,7 +985,7 @@
   // selectedText - returns the current text selection or and empty string
   function selectedText(editor) {
     restoreRange(editor);
-    if (ie) return editor.doc.selection.createRange().text;
+    if (ie) return getRange(editor).text;
     return editor.$frame[0].contentWindow.getSelection();
   }
 
