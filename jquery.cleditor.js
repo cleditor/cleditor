@@ -1,5 +1,5 @@
 ﻿/**
- @preserve CLEditor WYSIWYG HTML Editor v1.3.0
+ @preserve CLEditor WYSIWYG HTML Editor v1.3.1
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
 
@@ -13,6 +13,14 @@
 // ==/ClosureCompiler==
 
 (function($) {
+
+  // i18n
+  if ( 'undefined' === typeof CLEDITOR_I18N )
+    CLEDITOR_I18N = {};
+
+  function __(s) {
+    return ( undefined === CLEDITOR_I18N[s] ) ? s : CLEDITOR_I18N[s];
+  }
 
   //==============
   // jQuery Plugin
@@ -43,9 +51,15 @@
       sizes:        // sizes in the font size popup
                     "1,2,3,4,5,6,7",
       styles:       // styles in the style popup
-                    [["Paragraph", "<p>"], ["Header 1", "<h1>"], ["Header 2", "<h2>"],
-                    ["Header 3", "<h3>"],  ["Header 4","<h4>"],  ["Header 5","<h5>"],
-                    ["Header 6","<h6>"]],
+                    [
+                      [__("Paragraph"), "<p>"],
+                      [__("Header 1"), "<h1>"],
+                      [__("Header 2"), "<h2>"],
+                      [__("Header 3"), "<h3>"],
+                      [__("Header 4"), "<h4>"],
+                      [__("Header 5"), "<h5>"],
+                      [__("Header 6"), "<h6>"]
+                    ],
       useCSS:       false, // use CSS to style HTML when possible (not supported in ie)
       docType:      // Document type contained within the editor
                     '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
@@ -55,45 +69,45 @@
                     "margin:4px; font:10pt Arial,Verdana; cursor:text"
     },
 
-    // Define all usable toolbar buttons - the init string property is 
+    // Define all usable toolbar buttons - the init property is 
     //   expanded during initialization back into the buttons object and 
     //   seperate object properties are created for each button.
     //   e.g. buttons.size.title = "Font Size"
     buttons: {
-      // name,title,command,popupName (""=use name)
-      init:
-      "bold,,|" +
-      "italic,,|" +
-      "underline,,|" +
-      "strikethrough,,|" +
-      "subscript,,|" +
-      "superscript,,|" +
-      "font,,fontname,|" +
-      "size,Font Size,fontsize,|" +
-      "style,,formatblock,|" +
-      "color,Font Color,forecolor,|" +
-      "highlight,Text Highlight Color,hilitecolor,color|" +
-      "removeformat,Remove Formatting,|" +
-      "bullets,,insertunorderedlist|" +
-      "numbering,,insertorderedlist|" +
-      "outdent,,|" +
-      "indent,,|" +
-      "alignleft,Align Text Left,justifyleft|" +
-      "center,,justifycenter|" +
-      "alignright,Align Text Right,justifyright|" +
-      "justify,,justifyfull|" +
-      "undo,,|" +
-      "redo,,|" +
-      "rule,Insert Horizontal Rule,inserthorizontalrule|" +
-      "image,Insert Image,insertimage,url|" +
-      "link,Insert Hyperlink,createlink,url|" +
-      "unlink,Remove Hyperlink,|" +
-      "cut,,|" +
-      "copy,,|" +
-      "paste,,|" +
-      "pastetext,Paste as Text,inserthtml,|" +
-      "print,,|" +
-      "source,Show Source"
+      init: [
+        ['bold', __("Bold")],
+        ['italic', __("Italic")],
+        ['underline', __("Underline")],
+        ['strikethrough', __("Strikethrough")],
+        ['subscript', __("Subscript")],
+        ['superscript', __("Superscript")],
+        ['font', __("Font"), 'fontname', 'font'],
+        ['size', __("Text size"), 'fontsize', 'size'],
+        ['style', __("Style"), 'formatblock', 'style'],
+        ['color', __("Text color"), 'forecolor', 'color'],
+        ['highlight', __("Highlight color"), 'hilitecolor', 'color'],
+        ['removeformat', __("Remove formatting")],
+        ['bullets', __("Unordered list"), 'insertunorderedlist'],
+        ['numbering', __("Ordered list"), 'insertorderedlist'],
+        ['outdent', __("Outdent")],
+        ['indent', __("Indent")],
+        ['alignleft', __("Align left"), 'justifyleft'],
+        ['center', __("Align center"), 'justifycenter'],
+        ['alignright', __("Align right"), 'justifyright'],
+        ['justify', __("Align full"), 'justifyfull'],
+        ['undo', __("Undo")],
+        ['redo', __("Redo")],
+        ['rule', __("Insert horizontal rule"), 'inserthorizontalrule'],
+        ['image', __("Insert image"), 'insertimage', 'url'],
+        ['link', __("Insert link"), 'createlink', 'url'],
+        ['unlink', __("Remove link")],
+        ['cut', __("Cut")],
+        ['copy', __("Copy")],
+        ['paste', __("Paste")],
+        ['pastetext', __("Paste as text"), 'inserthtml', 'pastetext'],
+        ['print', __("Print")],
+        ['source', __("Show source"), false]
+      ]
     },
 
     // imagesPath - returns the path to the images folder
@@ -120,7 +134,7 @@
     return $result;
 
   };
-    
+
   //==================
   // Private Variables
   //==================
@@ -172,19 +186,20 @@
   // Initialization
   //===============
 
-  // Expand the buttons.init string back into the buttons object
+  // Expand the buttonsInit array back into the buttons object
   //   and create seperate object properties for each button.
   //   e.g. buttons.size.title = "Font Size"
-  $.each(buttons.init.split("|"), function(idx, button) {
-    var items = button.split(","), name = items[0];
+  $.each(buttons.init, function(idx, items) {
+    var name = items[0];
     buttons[name] = {
       stripIndex: idx,
       name: name,
-      title: items[1] === "" ? name.charAt(0).toUpperCase() + name.substr(1) : items[1],
-      command: items[2] === "" ? name : items[2],
-      popupName: items[3] === "" ? name : items[3]
+      title: items[1] || name.charAt(0).toUpperCase() + name.substr(1),
+      command: ( false !== items[2] ) ? items[2] || name : undefined,
+      popupName: items[3]
     };
   });
+  
   delete buttons.init;
 
   //============
@@ -635,13 +650,13 @@
 
     // URL
     else if (popupName == "url") {
-      $popup.html('Enter URL:<br><input type=text value="http://" size=35><br><input type=button value="Submit">');
+      $popup.html(__('Enter URL:') + '<br><input type=text value="http://" size=35><br><input type=button value="' + __('Submit') + '">');
       popupTypeClass = PROMPT_CLASS;
     }
 
     // Paste as Text
     else if (popupName == "pastetext") {
-      $popup.html('Paste your content here and click submit.<br /><textarea cols=40 rows=3></textarea><br /><input type=button value=Submit>');
+      $popup.html(__('Paste your content here and click submit.') + '<br /><textarea cols=40 rows=3></textarea><br /><input type=button value="' + __('Submit') + '">');
       popupTypeClass = PROMPT_CLASS;
     }
 
