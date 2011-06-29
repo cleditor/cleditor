@@ -53,6 +53,8 @@
                     "", 
       bodyStyle:    // style to assign to document body contained within the editor
                     "margin:4px; font:10pt Arial,Verdana; cursor:text"
+      script:       false,
+      runScript:    false
     },
 
     // Define all usable toolbar buttons - the init string property is 
@@ -803,7 +805,7 @@
       editor.$frame.remove();
 
     // Create a new iframe
-    var $frame = editor.$frame = $('<iframe frameborder="0" src="javascript:true;">')
+    var $frame = editor.$frame = $('<iframe frameborder="0" src="javascript:true;"' + (options.runScript ? '' : ' security="restricted"') + '>')
       .hide()
       .appendTo($main);
 
@@ -1082,8 +1084,10 @@
     // Convert the textarea source code into iframe html
     var html = updateFrameCallback ? updateFrameCallback(code) : code;
 
-    // Prevent script injection attacks by html encoding script tags
-    html = html.replace(/<(?=\/?script)/ig, "&lt;");
+    if(options.script){
+      // Prevent script injection attacks by html encoding script tags
+      html = html.replace(/<(?=\/?script)/ig, "&lt;");
+    }
 
     // Update the iframe checksum
     if (options.updateTextArea)
@@ -1091,7 +1095,20 @@
 
     // Update the iframe and trigger the change event
     if (html != $body.html()) {
-      $body.html(html);
+      if(ie){
+        var doc = editor.doc;
+        doc.open();
+        doc.write(
+          options.docType +
+          '<html>' +
+          ((options.docCSSFile === '') ? '' : '<head><link rel="stylesheet" type="text/css" href="' + options.docCSSFile + '" /></head>') +
+          '<body style="' + options.bodyStyle + '">' +
+          html + '</body></html>'
+        );
+        doc.close();
+      }else{
+        $body.html(html);
+      }
       $(editor).triggerHandler(CHANGE);
     }
 
