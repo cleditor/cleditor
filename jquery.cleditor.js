@@ -52,7 +52,7 @@
       docCSSFile:   // CSS file used to style the document contained within the editor
                     "", 
       bodyStyle:    // style to assign to document body contained within the editor
-                    "margin:4px; font:10pt Arial,Verdana; cursor:text"
+                    "margin:4px; font:10pt Arial,Verdana; cursor:text",
       script:       false,
       runScript:    false
     },
