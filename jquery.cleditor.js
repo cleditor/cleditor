@@ -350,6 +350,9 @@
     ["hidePopups", hidePopups],
     ["sourceMode", sourceMode, true],
     ["refresh", refresh],
+    ["text", text, true],
+    ["html", html, true],
+    ["wordcount", wordcount, true],
     ["select", select],
     ["selectedHTML", selectedHTML, true],
     ["selectedText", selectedText, true],
@@ -1207,6 +1210,83 @@
 			      } 
             $(editor).triggerHandler(CHANGE);
         }
+    });
+  }
+
+  // restoreRange - restores the current ie selection
+  function restoreRange(editor) {
+    if (ie && editor.range)
+      editor.range[0].select();
+  }
+
+  // text - returns text in the editor (no markup)
+  function text(editor) {
+    return $(editor.doc.body).text();
+  }
+
+  // html - returns HTML in the editor
+  function html(editor) {
+    return $(editor.doc.body).html();
+  }
+
+  // wordcount - returns a (simple) word count within the text (not HTML) of the edito
+  function wordcount(editor) {
+    var words = editor.text().match(/\w+/g);
+    return (!!words) ? words.length : 0;
+  }
+
+  // select - selects all the text in either the textarea or iframe
+  function select(editor) {
+    setTimeout(function() {
+      if (sourceMode(editor)) editor.$area.select();
+      else execCommand(editor, "selectall");
+    }, 0);
+  }
+
+  // selectedHTML - returns the current HTML selection or and empty string
+  function selectedHTML(editor) {
+    restoreRange(editor);
+    var range = getRange(editor);
+    if (ie)
+      return range.htmlText;
+    var layer = $("<layer>")[0];
+    layer.appendChild(range.cloneContents());
+    var html = layer.innerHTML;
+    layer = null;
+    return html;
+  }
+
+  // selectedText - returns the current text selection or and empty string
+  function selectedText(editor) {
+    restoreRange(editor);
+    if (ie) return getRange(editor).text;
+    return getSelection(editor).toString();
+  }
+
+  // showMessage - alert replacement
+  function showMessage(editor, message, button) {
+    var popup = createPopup("msg", editor.options, MSG_CLASS);
+    popup.innerHTML = message;
+    showPopup(editor, popup, button);
+  }
+
+  // showPopup - shows a popup
+  function showPopup(editor, popup, button) {
+
+    var offset, left, top, $popup = $(popup);
+
+    // Determine the popup location
+    if (button) {
+      var $button = $(button);
+      offset = $button.offset();
+      left = --offset.left;
+      top = offset.top + $button.height();
+    }
+    else {
+      var $toolbar = editor.$toolbar;
+      offset = $toolbar.offset();
+      left = Math.floor(($toolbar.width() - $popup.width()) / 2) + offset.left;
+      top = offset.top + $toolbar.height() - 2;
     }
 
     // updateTextArea - updates the textarea with the iframe contents
