@@ -352,6 +352,7 @@
     ["refresh", refresh],
     ["text", text, true],
     ["html", html, true],
+    ["content", content, true],
     ["wordcount", wordcount, true],
     ["select", select],
     ["selectedHTML", selectedHTML, true],
@@ -1228,6 +1229,10 @@
     return $(editor.doc.body).html();
   }
 
+  // content - alias for 'html' method
+  function content(editor) {
+    return editor.html();
+  }
   // wordcount - returns a (simple) word count within the text (not HTML) of the edito
   function wordcount(editor) {
     var words = editor.text().match(/\w+/g);
