@@ -7,11 +7,6 @@
  Dual licensed under the MIT or GPL Version 2 licenses.
 */
 
-// ==ClosureCompiler==
-// @compilation_level SIMPLE_OPTIMIZATIONS
-// @output_file_name jquery.cleditor.min.js
-// ==/ClosureCompiler==
-
 (function($) {
 
   //==============
