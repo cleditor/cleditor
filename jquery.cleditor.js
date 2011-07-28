@@ -1,4 +1,4 @@
-﻿/**
+/**
  @preserve CLEditor WYSIWYG HTML Editor v1.3.0
  http://premiumsoftware.net/cleditor
  requires jQuery v1.4.2 or later
