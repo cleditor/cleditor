@@ -737,19 +737,30 @@
 
   // focus - sets focus to either the textarea or iframe
   function focus(editor) {
-    setTimeout(function() {
-      if (sourceMode(editor)) editor.$area.focus();
-      else editor.$frame[0].contentWindow.focus();
-      refreshButtons(editor);
-    }, 0);
+    var content = sourceMode(editor) ? editor.$area : editor.$frame[0].contentWindow;
+    if (jQuery.isFunction(arguments[1])) {
+      // set a trigger function for focus
+      $(content).focus(arguments[1]);
+    } else {
+      setTimeout(function() {
+        content.focus();
+        refreshButtons(editor);
+      }, 0);
+    }
   }
+
   // blur - removes focus to either the textarea or iframe
   function blur(editor) {
-    setTimeout(function() {
-      if (sourceMode(editor)) editor.$area.blur();
-      else editor.$frame[0].contentWindow.blur();
-      refreshButtons(editor);
-    }, 0);
+    var content = sourceMode(editor) ? editor.$area : editor.$frame[0].contentWindow;
+    if (jQuery.isFunction(arguments[1])) {
+      // set a trigger function for blur
+      $(content).blur(arguments[1]);
+    } else {
+      setTimeout(function() {
+        content.blur();
+        refreshButtons(editor);
+      }, 0);
+    }
   }
 
   // getRange - gets the current text range object
