@@ -814,6 +814,7 @@
     // Create a new iframe
     var $frame = editor.$frame = $('<iframe frameborder="0" src="javascript:true;">')
       .hide()
+      .data('CLEDITOR', editor)
       .appendTo($main);
 
     // Load the iframe document content
