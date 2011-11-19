@@ -316,6 +316,7 @@
     ["disable", disable],
     ["execCommand", execCommand],
     ["focus", focus],
+    ["blur", blur],
     ["hidePopups", hidePopups],
     ["sourceMode", sourceMode, true],
     ["refresh", refresh],
@@ -739,6 +740,14 @@
     setTimeout(function() {
       if (sourceMode(editor)) editor.$area.focus();
       else editor.$frame[0].contentWindow.focus();
+      refreshButtons(editor);
+    }, 0);
+  }
+  // blur - removes focus to either the textarea or iframe
+  function blur(editor) {
+    setTimeout(function() {
+      if (sourceMode(editor)) editor.$area.blur();
+      else editor.$frame[0].contentWindow.blur();
       refreshButtons(editor);
     }, 0);
   }
