@@ -821,6 +821,10 @@
     );
     doc.close();
 
+ // Add the editor instance to the iframe so you can resolve the editor
+	// from the iframe alone. 
+    $doc.data(CLEDITOR, editor);
+
     // Work around for bug in IE which causes the editor to lose
     // focus when clicking below the end of the document.
     if (ie)
