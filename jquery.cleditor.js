@@ -101,11 +101,11 @@
 
   };
 
+  // Create a new jQuery object to hold the results
+  var $result = $([]);
+    
   // cleditor - creates a new editor for each of the matched textareas
   $.fn.cleditor = function(options) {
-
-    // Create a new jQuery object to hold the results
-    var $result = $([]);
 
     // Loop through all matching textareas and create the editors
     this.each(function(idx, elem) {
