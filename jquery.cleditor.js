@@ -1210,7 +1210,6 @@
 			      } 
             $(editor).triggerHandler(CHANGE);
         }
-    });
   }
 
   // restoreRange - restores the current ie selection
@@ -1288,6 +1287,7 @@
       left = Math.floor(($toolbar.width() - $popup.width()) / 2) + offset.left;
       top = offset.top + $toolbar.height() - 2;
     }
+  }
 
     // updateTextArea - updates the textarea with the iframe contents
     function updateTextArea(editor, checkForChange) {
