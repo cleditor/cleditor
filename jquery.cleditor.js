@@ -167,11 +167,13 @@
     // Popups are created once as needed and shared by all editor instances
     popups = {},
 
+	editors = [],
+
     // The image gallery is created once and shared by all editor instances.
     imageGallery = new ImageGallery(),
 
     // Used to prevent the document click event from being bound more than once
-    documentClickAssigned,
+    documentClickEventListener,
 
     // Local copy of the buttons object
     buttons = $.cleditor.buttons;
@@ -305,26 +307,24 @@
         $main.insertBefore($area)
             .append($area);
 
-        // Bind the document click event handler
-        if (!documentClickAssigned) {
-            $(document).click(function(e) {
-                // Dismiss all non-prompt popups
-                var $target = $(e.target);
-                
-                if (!$target.add($target.parents()).is("." + PROMPT_CLASS)) {
-                    hidePopups();
-                }
-            });
-            
-            documentClickAssigned = true;
-        }
+		// Bind the document click event handler
+		if (!documentClickEventListener) {
+		  documentClickEventListener = function(e) {
+			// Dismiss all non-prompt popups
+			var $target = $(e.target);
+			if (!$target.add($target.parents()).is("." + PROMPT_CLASS))
+			  hidePopups();
+		  }
+		  $(document).click(documentClickEventListener);
+		}
 
         // Bind the window resize event when the width or height is auto or %
-        if (/auto|%/.test("" + options.width + options.height)) {
-            $(window).resize(function() {
-                refresh(editor);
-            });
-        }
+       if (/auto|%/.test("" + options.width + options.height)) {
+		editor.windowResizeListener = function() { refresh(editor); };
+	    $(window).resize(editor.windowResizeListener);
+       }
+
+       editors.push(editor); 
 
         // Create the imageGallery DOM content.
         imageGallery.create();
@@ -1445,5 +1445,29 @@
 
             return $row;
         }
-    }
+	}
+        
+	function remove() {
+		// Remove resize listener
+		if (this.windowResizeListener) {
+		  $(window).unbind('resize', this.windowResizeListener);
+		}
+
+		// Remove editor from array
+		var index = $.inArray(this, editors);
+		if (index > -1) {
+		  editors.splice(index, 1);
+		}
+
+		// Perform additional cleanup if no editors are left
+		if (editors.length == 0) {
+		  // Unbind document click listener
+		  $(document).unbind('click', documentClickEventListener);
+		  documentClickEventListener = undefined;
+		  // Remove popup elements
+		  $.each(popups, function(idx, popup) {
+			$(popup).remove();
+		  });
+		}
+	}
 })(jQuery);
