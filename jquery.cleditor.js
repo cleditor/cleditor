@@ -936,7 +936,7 @@
         }
 
         // Update the textarea when the iframe loses focus
-        ($.browser.mozilla ? $doc : $(contentWindow)).blur(function() {
+        ($.browser.mozilla ? $doc : $(contentWindow)).bind('blur keyup', function() {
             updateTextArea(editor, true);
         });
 
