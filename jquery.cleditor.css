@@ -18,7 +18,7 @@
     outline:none /* webkit grip focus */;
 }
 .cleditorToolbar {
-    background: url('../images/cleditor/toolbar.gif') repeat;
+    background: url('images/toolbar.gif') repeat;
 }
 .cleditorGroup {
     float:left;
@@ -29,7 +29,7 @@
     width: 24px;
     height: 24px;
     margin: 1px 0 1px 0;
-    background: url('../images/cleditor/buttons.gif');
+    background: url('images/buttons.gif');
 }
 .cleditorDisabled {
     opacity: 0.3;
