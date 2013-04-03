@@ -181,3 +181,36 @@
 #cleditor-gallery-buttons {
     padding: 10px;
 }
+
+.bold-icon { background-position: -0px -0px; }
+.italic-icon { background-position: -24px -0px; }
+.underline-icon { background-position: -47px -0px; }
+.strikethrough-icon { background-position: -70px -1px; }
+.subscript-icon { background-position: -95px -1px; }
+.superscript-icon { background-position: -119px -1px; }
+.font-icon { background-position: -142px -1px; }
+.size-icon { background-position: -166px -1px; }
+.style-icon { background-position: -190px -1px; }
+.color-icon { background-position: -216px -1px; }
+.hightlight-icon { background-position: -240px -1px; }
+.removeformat-icon { background-position: -264px -1px; }
+.bullets-icon { background-position: -288px -0px; }
+.numbering-icon { background-position: -312px -0px; }
+.outdent-icon { background-position: -336px -0px; }
+.indent-icon { background-position: -360px -0px; }
+.alignleft-icon { background-position: -384px -0px; }
+.center-icon { background-position: -408px -0px; }
+.alignright-icon { background-position: -432px -0px; }
+.justify-icon { background-position: -456px -0px; }
+.undo-icon { background-position: -480px -0px; }
+.redo-icon { background-position: -503px -0px; }
+.rule-icon { background-position: -527px -0px; }
+.image-icon { background-position: -550px -0px; }
+.link-icon { background-position: -574px -0px; }
+.unlink-icon { background-position: -598px -0px; }
+.cut-icon { background-position: -623px -0px; }
+.copy-icon { background-position: -646px -0px; }
+.paste-icon { background-position: -672px -0px; }
+.pastetext-icon { background-position: -697px -0px; }
+.print-icon { background-position: -719px -0px; }
+.source-icon { background-position: -742px -0px; }
