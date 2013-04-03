@@ -1,13 +1,65 @@
-.cleditorMain {border:1px solid #999; padding:0 1px 1px; background-color:white}
-.cleditorMain iframe {border:none; margin:0; padding:0}
-.cleditorMain textarea {border:none; margin:0; padding:0; overflow-y:scroll; font:10pt Arial,Verdana; resize:none; outline:none /* webkit grip focus */}
-.cleditorToolbar {background: url('images/toolbar.gif') repeat}
-.cleditorGroup {float:left; height:26px}
-.cleditorButton {float:left; width:24px; height:24px; margin:1px 0 1px 0; background: url('images/buttons.gif')}
-.cleditorDisabled {opacity:0.3; filter:alpha(opacity=30)}
-.cleditorDivider {float:left; width:1px; height:23px; margin:1px 0 1px 0; background:#CCC}
-.cleditorPopup {border:solid 1px #999; background-color:white; position:absolute; font:10pt Arial,Verdana; cursor:default; z-index:10000}
-.cleditorList div {padding:2px 4px 2px 4px}
+.cleditorMain {
+    border: 1px solid #999;
+    padding: 0 1px 1px;
+    background-color: white;
+}
+.cleditorMain iframe {
+    border:none;
+    margin:0;
+    padding:0;
+}
+.cleditorMain textarea {
+    border: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+    font: 10pt Arial, Verdana;
+    resize:none;
+    outline:none /* webkit grip focus */;
+}
+.cleditorToolbar {
+    background: url('images/toolbar.gif') repeat;
+}
+.cleditorGroup {
+    float:left;
+    height:26px;
+}
+.cleditorButton {
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin: 1px 0 1px 0;
+    cursor: pointer;
+}
+.cleditorButton:hover {
+    background-color: #FFFFFF;
+}
+.cleditorDisabled {
+    opacity: 0.3;
+    filter:alpha(opacity=30);
+}
+.cleditorDivider {
+    float: left;
+    width:1px;
+    height:23px;
+    margin:1px 0 1px 0;
+    background:#CCC;
+}
+.cleditorPopup {
+    border: solid 1px #999;
+    background-color: white;
+    position: absolute;
+    font: 10pt Arial, Verdana;
+    cursor: default;
+    z-index: 10000;
+}
+.cleditorList > div {
+    padding: 2px 4px 2px 4px;
+}
+.cleditorList > div:hover {
+    background: #FFC;
+}
+
 .cleditorList p,
 .cleditorList h1,
 .cleditorList h2,
@@ -15,10 +67,159 @@
 .cleditorList h4,
 .cleditorList h5,
 .cleditorList h6,
-.cleditorList font {padding:0; margin:0; background-color:Transparent}
-.cleditorColor {width:150px; padding:1px 0 0 1px}
-.cleditorColor div {float:left; width:14px; height:14px; margin:0 1px 1px 0}
-.cleditorPrompt {background-color:#F6F7F9; padding:4px; font-size:8.5pt}
+.cleditorList font {
+    padding: 0;
+    margin: 0;
+    background-color: Transparent;
+}
+.cleditorColor {
+    width: 150px;
+    padding: 1px 0 0 1px;
+}
+.cleditorColor div {
+    float: left;
+    width: 14px;
+    height: 14px;
+    margin:0 1px 1px 0;
+}
+.cleditorPrompt {
+    background-color: #F6F7F9;
+    padding: 4px;
+    font-size: 8.5pt;
+}
 .cleditorPrompt input,
-.cleditorPrompt textarea {font:8.5pt Arial,Verdana;}
-.cleditorMsg {background-color:#FDFCEE; width:150px; padding:4px; font-size:8.5pt}
+.cleditorPrompt textarea {
+    font: 8.5pt Arial, Verdana;
+}
+.cleditorMsg {
+    background-color: #FDFCEE;
+    width: 150px;
+    padding: 4px;
+    font-size: 8.5pt;
+}
+
+/**
+ * Gallery styling
+**/
+
+#cleditor-gallery-overlay {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    background-color: #AAA;
+    opacity: 0.6;
+}
+#cleditor-gallery-dialog {
+    position: absolute;
+    z-index: 101;
+    width: 500px;
+    background-color: #FFF;
+    border: 1px solid #777;
+}
+#cleditor-gallery-dialog .title-bar {
+    width: 500px;
+    height: 25px;
+    background-color: #333;
+}
+#cleditor-gallery-dialog .title-bar h4 {
+    float: left;
+    width: 290px;
+    margin: 0 0 0 5px;
+    padding: 0;
+    font-size: 12px;
+    line-height: 25px;
+    color: #FFF;
+}
+#cleditor-gallery-dialog .title-bar .close-button {
+    float: right;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    margin-top: 5px;
+    margin-right: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #333;
+    color: #AAA;
+    border: 1px solid #AAA;
+    border-radius: 2px;
+}
+#cleditor-gallery-dialog .title-bar .close-button:hover {
+    color: #EEE;
+    border-color: #EEE;
+    background-color: #444;
+}
+#cleditor-gallery-dialog table {
+    width: 500px;
+    table-layout: fixed;
+    border-spacing: 0;
+}
+#cleditor-gallery-dialog td,
+#cleditor-gallery-dialog th {
+    padding: 0;
+}
+#cleditor-gallery-dialog table table {
+    width: 480px;
+}
+#cleditor-gallery-dialog .name {
+    width: 146px;
+}
+#cleditor-gallery-dialog .location {
+    width: 256px;
+}
+#cleditor-gallery-dialog .name,
+#cleditor-gallery-dialog .location,
+#cleditor-gallery-dialog .action {
+    padding: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#inner-table-container {
+    height: 250px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+#cleditor-gallery-buttons {
+    padding: 10px;
+}
+
+.cleditorSprite { background: url('images/buttons.gif'); }
+.bold-icon { background-position: -0px -0px; }
+.italic-icon { background-position: -24px -0px; }
+.underline-icon { background-position: -48px -0px; }
+.strikethrough-icon { background-position: -72px -1px; }
+.subscript-icon { background-position: -96px -1px; }
+.superscript-icon { background-position: -120px -1px; }
+.font-icon { background-position: -144px -1px; }
+.size-icon { background-position: -168px -1px; }
+.style-icon { background-position: -192px -1px; }
+.color-icon { background-position: -216px -1px; }
+.highlight-icon { background-position: -240px -1px; }
+.removeformat-icon { background-position: -264px -1px; }
+.bullets-icon { background-position: -288px -0px; }
+.numbering-icon { background-position: -312px -0px; }
+.outdent-icon { background-position: -336px -0px; }
+.indent-icon { background-position: -360px -0px; }
+.alignleft-icon { background-position: -384px -0px; }
+.center-icon { background-position: -408px -0px; }
+.alignright-icon { background-position: -432px -0px; }
+.justify-icon { background-position: -456px -0px; }
+.undo-icon { background-position: -480px -0px; }
+.redo-icon { background-position: -503px -0px; }
+.rule-icon { background-position: -528px -0px; }
+.image-icon { background-position: -552px -0px; }
+.link-icon { background-position: -576px -0px; }
+.unlink-icon { background-position: -600px -0px; }
+.cut-icon { background-position: -624px -0px; }
+.copy-icon { background-position: -648px -0px; }
+.paste-icon { background-position: -672px -0px; }
+.pastetext-icon { background-position: -696px -0px; }
+.print-icon { background-position: -720px -0px; }
+.imagegallery-icon { background-position: -744px -0px; }
+.source-icon { background-position: -768px -0px; }

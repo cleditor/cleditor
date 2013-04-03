@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fixed Size Demo - CLEditor WYSIWYG HTML Editor</title>
+    <link rel="stylesheet" type="text/css" href="jquery.cleditor.css" />
+    <link rel="stylesheet" type="text/css" href="jquery.cleditor.editor.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.cleditor.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        window.editor = $("#input").cleditor()[0];
+        window.editor.focus();
+      });
+    </script>
+  </head>
+  <body>
+    <textarea id="input" name="input">This is the fixed size demo.</textarea>
+  </body>
+</html>
