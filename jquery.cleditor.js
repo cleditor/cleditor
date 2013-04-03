@@ -1004,7 +1004,7 @@
         for (var i = 0; i < options.docCSSFile.length; i++) {
           genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
         }
-        genhtml += '</head><body></body></html>';
+        genhtml += '</head><body class="cleditor"></body></html>';
         doc.write(genhtml);
         doc.close();
 
@@ -1349,7 +1349,7 @@
                 for (var i = 0; i < options.docCSSFile.length; i++) {
                     genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
                 }
-                genhtml += '</head><body>' + html + '</body></html>';
+                genhtml += '</head><body class="cleditor">' + html + '</body></html>';
 
                 doc.open();
                 doc.write(genhtml);

@@ -29,6 +29,10 @@
     width: 24px;
     height: 24px;
     margin: 1px 0 1px 0;
+    cursor: pointer;
+}
+.cleditorButton:hover {
+    background-color: #FFFFFF;
 }
 .cleditorDisabled {
     opacity: 0.3;
