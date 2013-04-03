@@ -22,7 +22,7 @@
                         [ "bold", "italic", "underline", "strikethrough", "subscript", "superscript", "|", "font", "size",
                           "style", "|", "color", "highlight", "removeformat", "|", "bullets", "numbering", "|", "outdent",
                           "indent", "|", "alignleft", "center", "alignright", "justify", "|", "undo", "redo", "|",
-                          "rule", "image", "link", "unlink", "|", "cut", "copy", "paste", "pastetext", "|", "print", "source" ],
+                          "rule", "image", "link", "unlink", "|", "cut", "copy", "paste", "pastetext", "|", "print", "imagegallery", "source" ],
             colors:     // colors in the color popup
                         [ "FFF", "FCC", "FC9", "FF9", "FFC", "9F9", "9FF", "CFF", "CCF", "FCF", "CCC", "F66", "F96",
                           "FF6", "FF3", "6F9", "3FF", "6FF", "99F", "F9F", "BBB", "F00", "F90", "FC6", "FF0", "3F3",
@@ -46,8 +46,8 @@
                         [],
             bodyStyle:  // style to assign to document body contained within the editor
                         "margin:4px; font:10pt Arial,Verdana; cursor:text",
-            script:       false,
-						runScript:    false, 
+            script:     false,
+			runScript:  false, 
             galleryUploadsPath: // path used by image gallery to retrieve image information from the server.
                         '/file_uploads/images/'
         },
@@ -255,6 +255,13 @@
                 name: "print",
                 title: "Print",
                 command: "print"
+            },
+            imagegallery: {
+                image: "cleditorSprite imagegallery-icon",
+                name: "imagegallery",
+                title: "Image Gallery",
+                command: "insertImage",
+                popupName: "imagegallery"
             },
             source: {
                 image: "cleditorSprite source-icon",
@@ -477,23 +484,23 @@
     // The closure compiler will rename the private functions. However, the
     // exposed method names on the cleditor object will remain fixed.
     methods = [
-    ["clear", clear],
-    ["disable", disable],
-    ["execCommand", execCommand],
-    ["focus", focus],
-    ["hidePopups", hidePopups],
-    ["sourceMode", sourceMode, true],
-    ["refresh", refresh],
-    ["text", text, true],
-    ["html", html, true],
-    ["content", content, true],
-    ["wordcount", wordcount, true],
-    ["select", select],
-    ["selectedHTML", selectedHTML, true],
-    ["selectedText", selectedText, true],
-    ["showMessage", showMessage],
-    ["updateFrame", updateFrame],
-    ["updateTextArea", updateTextArea]
+        ["clear", clear],
+        ["disable", disable],
+        ["execCommand", execCommand],
+        ["focus", focus],
+        ["hidePopups", hidePopups],
+        ["sourceMode", sourceMode, true],
+        ["refresh", refresh],
+        ["text", text, true],
+        ["html", html, true],
+        ["content", content, true],
+        ["wordcount", wordcount, true],
+        ["select", select],
+        ["selectedHTML", selectedHTML, true],
+        ["selectedText", selectedText, true],
+        ["showMessage", showMessage],
+        ["updateFrame", updateFrame],
+        ["updateTextArea", updateTextArea]
     ];
 
     $.each(methods, function(idx, method) {
@@ -1216,6 +1223,27 @@
         }
     }
 
+    // text - returns text in the editor (no markup)
+    function text(editor) {
+        return $(editor.doc.body).text();
+    }
+
+    // html - returns HTML in the editor
+    function html(editor) {
+        return $(editor.doc.body).html();
+    }
+
+    // content - alias for 'html' method
+    function content(editor) {
+        return editor.html();
+    }
+
+    // wordcount - returns a (simple) word count within the text (not HTML) of the edito
+    function wordcount(editor) {
+        var words = editor.text().match(/\w+/g);
+        return (!!words) ? words.length : 0;
+    }
+
     // select - selects all the text in either the textarea or iframe
     function select(editor) {
         setTimeout(function() {
@@ -1365,90 +1393,6 @@
             }
             $(editor).triggerHandler(CHANGE);
         }
-  }
-
-  // restoreRange - restores the current ie selection
-  function restoreRange(editor) {
-    if (ie && editor.range)
-      editor.range[0].select();
-  }
-
-  // text - returns text in the editor (no markup)
-  function text(editor) {
-    return $(editor.doc.body).text();
-  }
-
-  // html - returns HTML in the editor
-  function html(editor) {
-    return $(editor.doc.body).html();
-  }
-
-  // content - alias for 'html' method
-  function content(editor) {
-    return editor.html();
-  }
-  // wordcount - returns a (simple) word count within the text (not HTML) of the edito
-  function wordcount(editor) {
-    var words = editor.text().match(/\w+/g);
-    return (!!words) ? words.length : 0;
-  }
-
-  // select - selects all the text in either the textarea or iframe
-  function select(editor) {
-    setTimeout(function() {
-      if (sourceMode(editor)) editor.$area.select();
-      else execCommand(editor, "selectall");
-    }, 0);
-  }
-
-  // selectedHTML - returns the current HTML selection or and empty string
-  function selectedHTML(editor) {
-    restoreRange(editor);
-    var range = getRange(editor);
-    if (ie)
-      return range.htmlText;
-    var layer = $("<layer>")[0];
-    layer.appendChild(range.cloneContents());
-    var html = layer.innerHTML;
-    layer = null;
-    return html;
-  }
-
-  // selectedText - returns the current text selection or and empty string
-  function selectedText(editor) {
-    restoreRange(editor);
-    if (ie) {
-        return getRange(editor).text;
-    }
-
-    return getSelection(editor).toString();
-  }
-
-  // showMessage - alert replacement
-  function showMessage(editor, message, button) {
-    var popup = createPopup("msg", editor.options, MSG_CLASS);
-    popup.innerHTML = message;
-    showPopup(editor, popup, button);
-  }
-
-  // showPopup - shows a popup
-  function showPopup(editor, popup, button) {
-
-    var offset, left, top, $popup = $(popup);
-
-    // Determine the popup location
-    if (button) {
-      var $button = $(button);
-      offset = $button.offset();
-      left = --offset.left;
-      top = offset.top + $button.height();
-    }
-    else {
-      var $toolbar = editor.$toolbar;
-      offset = $toolbar.offset();
-      left = Math.floor(($toolbar.width() - $popup.width()) / 2) + offset.left;
-      top = offset.top + $toolbar.height() - 2;
-    }
   }
 
     // updateTextArea - updates the textarea with the iframe contents

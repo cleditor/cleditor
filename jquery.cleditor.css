@@ -29,7 +29,6 @@
     width: 24px;
     height: 24px;
     margin: 1px 0 1px 0;
-    background: url('images/buttons.gif');
 }
 .cleditorDisabled {
     opacity: 0.3;
@@ -182,15 +181,16 @@
     padding: 10px;
 }
 
+.cleditorSprite { background: url('images/buttons.gif'); }
 .bold-icon { background-position: -0px -0px; }
 .italic-icon { background-position: -24px -0px; }
-.underline-icon { background-position: -47px -0px; }
-.strikethrough-icon { background-position: -70px -1px; }
-.subscript-icon { background-position: -95px -1px; }
-.superscript-icon { background-position: -119px -1px; }
-.font-icon { background-position: -142px -1px; }
-.size-icon { background-position: -166px -1px; }
-.style-icon { background-position: -190px -1px; }
+.underline-icon { background-position: -48px -0px; }
+.strikethrough-icon { background-position: -72px -1px; }
+.subscript-icon { background-position: -96px -1px; }
+.superscript-icon { background-position: -120px -1px; }
+.font-icon { background-position: -144px -1px; }
+.size-icon { background-position: -168px -1px; }
+.style-icon { background-position: -192px -1px; }
 .color-icon { background-position: -216px -1px; }
 .hightlight-icon { background-position: -240px -1px; }
 .removeformat-icon { background-position: -264px -1px; }
@@ -204,13 +204,14 @@
 .justify-icon { background-position: -456px -0px; }
 .undo-icon { background-position: -480px -0px; }
 .redo-icon { background-position: -503px -0px; }
-.rule-icon { background-position: -527px -0px; }
-.image-icon { background-position: -550px -0px; }
-.link-icon { background-position: -574px -0px; }
-.unlink-icon { background-position: -598px -0px; }
-.cut-icon { background-position: -623px -0px; }
-.copy-icon { background-position: -646px -0px; }
+.rule-icon { background-position: -528px -0px; }
+.image-icon { background-position: -552px -0px; }
+.link-icon { background-position: -576px -0px; }
+.unlink-icon { background-position: -600px -0px; }
+.cut-icon { background-position: -624px -0px; }
+.copy-icon { background-position: -648px -0px; }
 .paste-icon { background-position: -672px -0px; }
-.pastetext-icon { background-position: -697px -0px; }
-.print-icon { background-position: -719px -0px; }
-.source-icon { background-position: -742px -0px; }
+.pastetext-icon { background-position: -696px -0px; }
+.print-icon { background-position: -720px -0px; }
+.imagegallery-icon { background-position: -744px -0px; }
+.source-icon { background-position: -768px -0px; }
