@@ -1327,7 +1327,7 @@
         }
 
         // Convert the textarea source code into iframe html
-        var html = updateFrameCallback ? updateFrameCallback(code) : code;
+        var html = updateFrameCallback ? updateFrameCallback.call(editor, code) : code;
 
         // Prevent script injection attacks by html encoding script tags
         if (options.script) {
@@ -1381,7 +1381,7 @@
         }
 
         // Convert the iframe html into textarea source code
-        var code = updateTextAreaCallback ? updateTextAreaCallback(html) : html;
+        var code = updateTextAreaCallback ? updateTextAreaCallback.call(editor, html) : html;
 
         // Update the textarea checksum
         if (options.updateFrame) {
