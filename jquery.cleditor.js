@@ -280,7 +280,7 @@
                 var data = $.data(elem, CLEDITOR);
                 
                 if (!data) {
-                    data = new CLEditor(elem, options);
+                    data = new cleditor(elem, options);
                 }
 
                 $result = $result.add(data);
@@ -327,6 +327,8 @@
     ie6boxmodel = $.support.boxModel,
 
     // Test for iPhone/iTouch/iPad
+    mozilla = /mozilla/i.test(navigator.userAgent),
+    webkit = /webkit/i.test(navigator.userAgent),
     iOS = /iphone|ipad|ipod/i.test(navigator.userAgent),
 
     // Popups are created once as needed and shared by all editor instances
@@ -348,7 +350,7 @@
     //============
 
     // CLEditor - creates a new editor for the passed in textarea element
-    CLEditor = function(area, options) {
+    cleditor = function(area, options) {
         var editor = this;
 
         // Get the defaults and override with options
@@ -1090,7 +1092,7 @@
         }
 
         // Update the textarea when the iframe loses focus
-        ($.browser.mozilla ? $doc : $(contentWindow)).bind('blur keyup', function() {
+        (mozilla ? $doc : $(contentWindow)).bind('blur keyup', function() {
             updateTextArea(editor, true);
         });
 
@@ -1120,7 +1122,7 @@
             // Resize the iframe
             // height = (/%/.test("" + options.height) ?
             //            $main.height() : parseInt(options.height)) - height;
-            hgt = $main.height() - hgt;
+            height = $main.height() - height;
             $frame.width(width).height(height);
 
             // Resize the textarea. IE6 textareas have a 1px top
@@ -1138,10 +1140,10 @@
     // refreshButtons - enables or disables buttons based on availability
     function refreshButtons(editor) {
         // Webkit requires focus before queryCommandEnabled will return anything but false
-        if (!iOS && $.browser.webkit && !editor.focused) {
-            editor.$frame[0].contentWindow.focus();
-            window.focus();
-            editor.focused = true;
+        if (!iOS && webkit && !editor.focused) {
+           editor.$frame[0].contentWindow.focus();
+           window.focus();
+           editor.focused = true;
         }
 
         // Get the object used for checking queryCommandEnabled
