@@ -19,32 +19,31 @@
             width:      500, // width not including margins, borders or padding
             height:     250, // height not including margins, borders or padding
             controls:   // controls to add to the toolbar
-                        "bold italic underline strikethrough subscript superscript | font size " +
-                        "style | color highlight removeformat | bullets numbering | outdent " +
-                        "indent | alignleft center alignright justify | undo redo | " +
-                        "rule image link unlink | cut copy paste pastetext | print source",
+                        [ "bold", "italic", "underline", "strikethrough", "subscript", "superscript", "|", "font", "size",
+                          "style", "|", "color", "highlight", "removeformat", "|", "bullets", "numbering", "|", "outdent",
+                          "indent", "|", "alignleft", "center", "alignright", "justify", "|", "undo", "redo", "|",
+                          "rule", "image", "link", "unlink", "|", "cut", "copy", "paste", "pastetext", "|", "print", "source" ],
             colors:     // colors in the color popup
-                        "FFF FCC FC9 FF9 FFC 9F9 9FF CFF CCF FCF " +
-                        "CCC F66 F96 FF6 FF3 6F9 3FF 6FF 99F F9F " +
-                        "BBB F00 F90 FC6 FF0 3F3 6CC 3CF 66C C6C " +
-                        "999 C00 F60 FC3 FC0 3C0 0CC 36F 63F C3C " +
-                        "666 900 C60 C93 990 090 399 33F 60C 939 " +
-                        "333 600 930 963 660 060 366 009 339 636 " +
-                        "000 300 630 633 330 030 033 006 309 303",
+                        [ "FFF", "FCC", "FC9", "FF9", "FFC", "9F9", "9FF", "CFF", "CCF", "FCF", "CCC", "F66", "F96",
+                          "FF6", "FF3", "6F9", "3FF", "6FF", "99F", "F9F", "BBB", "F00", "F90", "FC6", "FF0", "3F3",
+                          "6CC", "3CF", "66C", "C6C", "999", "C00", "F60", "FC3", "FC0", "3C0", "0CC", "36F", "63F",
+                          "C3C", "666", "900", "C60", "C93", "990", "090", "399", "33F", "60C", "939", "333", "600",
+                          "930", "963", "660", "060", "366", "009", "339", "636", "000", "300", "630", "633", "330",
+                          "030", "033", "006", "309", "303" ],
             fonts:      // font names in the font popup
-                        "Arial,Arial Black,Comic Sans MS,Courier New,Narrow,Garamond," +
-                        "Georgia,Impact,Sans Serif,Serif,Tahoma,Trebuchet MS,Verdana",
+                        [ "Arial", "Arial Black", "Comic Sans MS", "Courier New", "Narrow", "Garamond",
+                          "Georgia", "Impact", "Sans Serif", "Serif", "Tahoma", "Trebuchet MS", "Verdana" ],
             sizes:      // sizes in the font size popup
-                        "1,2,3,4,5,6,7",
+                        [ 1, 2, 3, 4, 5, 6, 7],
             styles:     // styles in the style popup
-                        [["Paragraph", "<p>"], ["Header 1", "<h1>"], ["Header 2", "<h2>"],
-                        ["Header 3", "<h3>"],  ["Header 4","<h4>"],  ["Header 5","<h5>"],
-                        ["Header 6","<h6>"]],
-            useCSS:     false, // use CSS to style HTML when possible (not supported in ie)
+                        [ [ "Paragraph", "<p>" ], [ "Header 1", "<h1>" ], [ "Header 2", "<h2>" ],
+                          [ "Header 3", "<h3>" ], [ "Header 4", "<h4>" ], [ "Header 5", "<h5>" ],
+                          [ "Header 6", "<h6>" ], [ "Quote", "<blockquote>" ], [ "Fixed", "<pre>" ] ],
+            useCSS:     true, // use CSS to style HTML when possible (not supported in ie)
             docType:    // Document type contained within the editor
-                        '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+                        '<!DOCTYPE html>',
             docCSSFile: // CSS file used to style the document contained within the editor
-                        "",
+                        [],
             bodyStyle:  // style to assign to document body contained within the editor
                         "margin:4px; font:10pt Arial,Verdana; cursor:text",
             script:       false,
@@ -63,40 +62,205 @@
         //   seperate object properties are created for each button.
         //   e.g. buttons.size.title = "Font Size"
         buttons: {
-            // name,title,command,popupName (""=use name)
-            init:   "bold,,|" +
-                    "italic,,|" +
-                    "underline,,|" +
-                    "strikethrough,,|" +
-                    "subscript,,|" +
-                    "superscript,,|" +
-                    "font,,fontname,|" +
-                    "size,Font Size,fontsize,|" +
-                    "style,,formatblock,|" +
-                    "color,Font Color,forecolor,|" +
-                    "highlight,Text Highlight Color,hilitecolor,color|" +
-                    "removeformat,Remove Formatting,|" +
-                    "bullets,,insertunorderedlist|" +
-                    "numbering,,insertorderedlist|" +
-                    "outdent,,|" +
-                    "indent,,|" +
-                    "alignleft,Align Text Left,justifyleft|" +
-                    "center,,justifycenter|" +
-                    "alignright,Align Text Right,justifyright|" +
-                    "justify,,justifyfull|" +
-                    "undo,,|" +
-                    "redo,,|" +
-                    "rule,Insert Horizontal Rule,inserthorizontalrule|" +
-                    "image,Insert Image,insertimage,url|" +
-                    "link,Insert Hyperlink,createlink,url|" +
-                    "unlink,Remove Hyperlink,|" +
-                    "cut,,|" +
-                    "copy,,|" +
-                    "paste,,|" +
-                    "pastetext,Paste as Text,inserthtml,|" +
-                    "print,,|" +
-                    "imagegallery,Image Gallery,insertImage,imagegallery|" +
-                    "source,Show Source"
+            bold: {
+                image: "cleditorSprite bold-icon",
+                name: "bold",
+                title: "Bold",
+                command: "bold"
+            },
+            italic: {
+                image: "cleditorSprite italic-icon",
+                name: "italic",
+                title: "Italic",
+                command: "italic"
+            },
+            underline: {
+                image: "cleditorSprite underline-icon",
+                name: "underline",
+                title: "Underline",
+                command: "underline"
+            },
+            strikethrough: {
+                image: "cleditorSprite strikethrough-icon",
+                name: "strikethrough",
+                title: "Strikethrough",
+                command: "strikethrough"
+            },
+            subscript: {
+                image: "cleditorSprite subscript-icon",
+                name: "subscript",
+                title: "Subscript",
+                command: "subscript"
+            },
+            superscript: {
+                image: "cleditorSprite superscript-icon",
+                name: "superscript",
+                title: "Superscript",
+                command: "superscript"
+            },
+            font: {
+                image: "cleditorSprite font-icon",
+                name: "font",
+                title: "Font",
+                command: "fontname",
+                popupName: "font"
+            },
+            size: {
+                image: "cleditorSprite size-icon",
+                name: "size",
+                title: "Font Size",
+                command: "fontsize",
+                popupName: "size"
+            },
+            style: {
+                image: "cleditorSprite style-icon",
+                name: "style",
+                title: "Style",
+                command: "formatblock",
+                popupName: "style"
+            },
+            color: {
+                image: "cleditorSprite color-icon",
+                name: "color",
+                title: "Font Color",
+                command: "forecolor",
+                popupName: "color"
+            },
+            highlight: {
+                image: "cleditorSprite highlight-icon",
+                name: "highlight",
+                title: "Text Highlight Color",
+                command: "hilitecolor",
+                popupName: "color"
+            },
+            removeformat: {
+                image: "cleditorSprite removeformat-icon",
+                name: "removeformat",
+                title: "Remove Formatting",
+                command: "removeformat"
+            },
+            bullets: {
+                image: "cleditorSprite bullets-icon",
+                name: "bullets",
+                title: "Bullets",
+                command: "insertunorderedlist"
+            },
+            numbering: {
+                image: "cleditorSprite numbering-icon",
+                name: "numbering",
+                title: "Numbering",
+                command: "insertorderedlist"
+            },
+            outdent: {
+                image: "cleditorSprite outdent-icon",
+                name: "outdent",
+                title: "Outdent",
+                command: "outdent"
+            },
+            indent: {
+                image: "cleditorSprite indent-icon",
+                name: "indent",
+                title: "Indent",
+                command: "indent"
+            },
+            alignleft: {
+                image: "cleditorSprite alignleft-icon",
+                name: "alignleft",
+                title: "Align Text Left",
+                command: "justifyleft"
+            },
+            center: {
+                image: "cleditorSprite center-icon",
+                name: "center",
+                title: "Center",
+                command: "justifycenter"
+            },
+            alignright: {
+                image: "cleditorSprite alignright-icon",
+                name: "alignright",
+                title: "Align Text Right",
+                command: "justifyright"
+            },
+            justify: {
+                image: "cleditorSprite justify-icon",
+                name: "justify",
+                title: "Justify",
+                command: "justifyfull"
+            },
+            undo: {
+                image: "cleditorSprite undo-icon",
+                name: "undo",
+                title: "Undo",
+                command: "undo"
+            },
+            redo: {
+                image: "cleditorSprite redo-icon",
+                name: "redo",
+                title: "Redo",
+                command: "redo"
+            },
+            rule: {
+                image: "cleditorSprite rule-icon",
+                name: "rule",
+                title: "Insert Horizontal Rule",
+                command: "inserthorizontalrule"
+            },
+            image: {
+                image: "cleditorSprite image-icon",
+                name: "image",
+                title: "Insert Image",
+                command: "insertimage",
+                popupName: "url"
+            },
+            link: {
+                image: "cleditorSprite link-icon",
+                name: "link",
+                title: "Insert Hyperlink",
+                command: "createlink",
+                popupName: "url"
+            },
+            unlink: {
+                image: "cleditorSprite unlink-icon",
+                name: "unlink",
+                title: "Remove Hyperlink",
+                command: "unlink"
+            },
+            cut: {
+                image: "cleditorSprite cut-icon",
+                name: "cut",
+                title: "Cut",
+                command: "cut"
+            },
+            copy: {
+                image: "cleditorSprite copy-icon",
+                name: "copy",
+                title: "Copy",
+                command: "copy"
+            },
+            paste: {
+                image: "cleditorSprite paste-icon",
+                name: "paste",
+                title: "Paste",
+                command: "paste"
+            },
+            pastetext: {
+                image: "cleditorSprite pastetext-icon",
+                name: "pastetext",
+                title: "Paste as Text",
+                command: "inserthtml",
+                popupName: "pastetext"
+            },
+            print: {
+                image: "cleditorSprite print-icon",
+                name: "print",
+                title: "Print",
+                command: "print"
+            },
+            source: {
+                image: "cleditorSprite source-icon",
+                name: "source",
+                title: "Show Source"
+            }
         },
 
         // imagesPath - returns the path to the images folder
@@ -112,7 +276,7 @@
 
         // Loop through all matching textareas and create the editors
         this.each(function(idx, elem) {
-            if (elem.tagName == "TEXTAREA") {
+            if (elem.tagName === "TEXTAREA") {
                 var data = $.data(elem, CLEDITOR);
                 
                 if (!data) {
@@ -179,29 +343,6 @@
     // Local copy of the buttons object
     buttons = $.cleditor.buttons;
 
-    //===============
-    // Initialization
-    //===============
-
-    // Expand the buttons.init string back into the buttons object
-    //   and create seperate object properties for each button.
-    //   e.g. buttons.size.title = "Font Size"
-    $.each(buttons.init.split("|"), function(idx, button) {
-        var items = button.split(",");
-        var name = items[0];
-        
-        buttons[name] = {
-            stripIndex: idx,
-            name: name,
-            title: items[1] === "" ? name.charAt(0).toUpperCase() + name.substr(1) : items[1],
-            command: items[2] === "" ? name : items[2],
-            popupName: items[3] === "" ? name : items[3]
-        };
-    });
-
-    // We're now done with the init element of the buttons attribute.
-    delete buttons.init;
-
     //============
     // Constructor
     //============
@@ -214,62 +355,64 @@
         editor.options = options = $.extend({}, $.cleditor.defaultOptions, options);
 
         // Hide the textarea and associate it with this editor
-        var $area = $(area)
+        var $area = editor.$area = $(area)
                         .hide()
                         .data(CLEDITOR, editor)
                         .blur(function() {
                             // Update the iframe when the textarea loses focus
                             updateFrame(editor, true);
                         });
-        editor.$area = $area;
 
         // Create the main container and append the textarea
-        var $main = $(DIV_TAG)
+        var $main = editor.$main = $(DIV_TAG)
                         .addClass(MAIN_CLASS)
                         .width(options.width)
                         .height(options.height);
-        editor.$main = $main;
 
         // Create the toolbar
-        var $toolbar = $(DIV_TAG)
+        var $toolbar = editor.$toolbar = $(DIV_TAG)
                         .addClass(TOOLBAR_CLASS)
                         .appendTo($main);
-        editor.$toolbar = $toolbar;
 
         // Add the first group to the toolbar
         var $group = $(DIV_TAG)
                         .addClass(GROUP_CLASS)
                         .appendTo($toolbar);
     
-        // Add the buttons to the toolbar
-        $.each(options.controls.split(" "), function(idx, buttonName) {
-            if (buttonName === "") {
-                return true;
-            }
+        var toolBarControls = options.controls,
+        controlLength = toolBarControls.length;
+
+        for (var i = 0; i < controlLength; i++) {
+            var buttonName = toolBarControls[i];
 
             if (buttonName == "|") {
                 // Divider
                 
                 // Add a new divider to the group
-                var $div = $(DIV_TAG)
-                            .addClass(DIVIDER_CLASS)
-                            .appendTo($group);
+                $(DIV_TAG)
+                        .addClass(DIVIDER_CLASS)
+                        .appendTo($group);
 
                 // Create a new group
                 $group = $(DIV_TAG)
-                            .addClass(GROUP_CLASS)
-                            .appendTo($toolbar);
+                        .addClass(GROUP_CLASS)
+                        .appendTo($toolbar);
             } else {
                 // Button
                 
                 // Get the button definition
                 var button = buttons[buttonName];
 
+                if (typeof button == 'undefined') {
+                    throw "Button Name:" + buttonName + " is undefined";
+                }
+
                 // Add a new button to the group
                 var $buttonDiv = $(DIV_TAG)
                                     .data(BUTTON_NAME, button.name)
                                     .addClass(BUTTON_CLASS)
                                     .addClass(UNSELECTABLE_CLASS)
+                                    .addClass(button.image)
                                     .attr("title", button.title)
                                     .bind(CLICK, $.proxy(buttonClick, editor))
                                     .appendTo($group)
@@ -280,12 +423,6 @@
 
                 if (button.css) {
                     map = button.css;
-                } else if (button.image) {
-                    map.backgroundImage = imageUrl(button.image);
-                }
-                
-                if (button.stripIndex) {
-                    map.backgroundPosition = button.stripIndex * -24;
                 }
                 
                 $buttonDiv.css(map);
@@ -296,9 +433,7 @@
                         button.popupContent, button.popupHover);
                 }
             }
-
-            return true;
-        });
+        }
 
         // Add the main div to the DOM and append the textarea
         $main.insertBefore($area)
@@ -334,7 +469,7 @@
     // Public Methods
     //===============
 
-    var fn = CLEditor.prototype,
+    var fn = cleditor.prototype,
 
     // Expose the following private functions as methods on the cleditor object.
     // The closure compiler will rename the private functions. However, the
@@ -361,8 +496,8 @@
 
     $.each(methods, function(idx, method) {
         fn[method[0]] = function() {
-            var editor = this;
-            var args = [editor];
+            var editor = this,
+                args = [editor];
 
             // using each here would cast booleans into objects!
             for(var x = 0; x < arguments.length; x++) {
@@ -392,15 +527,15 @@
 
     // buttonClick - click event handler for toolbar buttons
     function buttonClick(e) {
-        var editor = this;
-        var buttonDiv = e.target;
-        var buttonName = $.data(buttonDiv, BUTTON_NAME);
-        var button = buttons[buttonName];
-        var popupName = button.popupName;
-        var popup = popups[popupName];
+        var editor = this,
+            buttonDiv = e.target,
+            buttonName = $.data(buttonDiv, BUTTON_NAME),
+            button = buttons[buttonName],
+            popupName = button.popupName,
+            popup = popups[popupName];
 
         // Check if disabled
-        if (editor.disabled || $(buttonDiv).attr(DISABLED) == DISABLED) {
+        if (editor.disabled || $(buttonDiv).attr(DISABLED) === DISABLED) {
             return;
         }
 
@@ -421,7 +556,7 @@
         }
 
         // Toggle source
-        if (buttonName == "source") {
+        if (buttonName === "source") {
             if (sourceMode(editor)) {
                 // Show the iframe
                 delete editor.range;
@@ -448,9 +583,9 @@
                 var $popup = $(popup);
 
                 // URL
-                if (popupName == "url") {
+                if (popupName === "url") {
                     // Check for selection before showing the link url popup
-                    if (buttonName == "link" && selectedText(editor) === "") {
+                    if (buttonName === "link" && selectedText(editor) === "") {
                         showMessage(editor, "A selection is required when inserting a link.", buttonDiv);
                         return false;
                     }
@@ -461,8 +596,8 @@
                         .bind(CLICK, function() {
 
                         // Insert the image or link if a url was entered
-                        var $text = $popup.find(":text");
-                        var url = $.trim($text.val());
+                        var $text = $popup.find(":text"),
+                            url = $.trim($text.val());
 
                         if (url !== "") {
                             execCommand(editor, data.command, url, null, data.button);
@@ -474,7 +609,7 @@
                         focus(editor);
 
                     });
-                } else if (popupName == "pastetext") {
+                } else if (popupName === "pastetext") {
                     // Paste as Text
 
                     // Wire up the submit button click event handler
@@ -482,8 +617,8 @@
                         .unbind(CLICK)
                         .bind(CLICK, function() {
                             // Insert the unformatted text replacing new lines with break tags
-                            var $textarea = $popup.find("textarea");
-                            var text = $textarea.val().replace(/\n/g, "<br />");
+                            var $textarea = $popup.find("textarea"),
+                                text = $textarea.val().replace(/\n/g, "<br />");
 
                             if (text !== "") {
                                 execCommand(editor, data.command, text, null, data.button);
@@ -494,7 +629,7 @@
                             hidePopups();
                             focus(editor);
                         });
-                } else if (popupName == "imagegallery") {
+                } else if (popupName === "imagegallery") {
                     // Show the gallery dialog.
                     imageGallery.show(editor);
 
@@ -510,7 +645,7 @@
 
                 // propaginate to documnt click
                 return;
-            } else if (buttonName == "print") {
+            } else if (buttonName === "print") {
                 // Print
                 editor.$frame[0].contentWindow.print();
             } else if (!execCommand(editor, data.command, data.value, data.useCSS, buttonDiv)) {
@@ -536,9 +671,9 @@
 
     // popupClick - click event handler for popup items
     function popupClick(e) {
-        var editor = this;
-        var popup = e.data.popup;
-        var target = e.target;
+        var editor = this,
+            popup = e.data.popup,
+            target = e.target;
 
         // Check for message and prompt popups
         if (popup === popups.msg || $(popup).hasClass(PROMPT_CLASS)) {
@@ -546,28 +681,28 @@
         }
 
         // Get the button info
-        var buttonDiv = $.data(popup, BUTTON);
-        var buttonName = $.data(buttonDiv, BUTTON_NAME);
-        var button = buttons[buttonName];
-        var command = button.command;
-        var value;
-        var useCSS = editor.options.useCSS;
+        var buttonDiv = $.data(popup, BUTTON),
+            buttonName = $.data(buttonDiv, BUTTON_NAME),
+            button = buttons[buttonName],
+            command = button.command,
+            value,
+            useCSS = editor.options.useCSS;
 
         // Get the command value
-        if (buttonName == "font") {
+        if (buttonName === "font") {
             // Opera returns the fontfamily wrapped in quotes
             value = target.style.fontFamily.replace(/"/g, "");
-        } else if (buttonName == "size") {
-            if (target.tagName == "DIV") {
+        } else if (buttonName === "size") {
+            if (target.tagName === "DIV") {
                 target = target.children[0];
             }
             
             value = target.innerHTML;
-        } else if (buttonName == "style") {
+        } else if (buttonName === "style") {
             value = "<" + target.tagName + ">";
-        } else if (buttonName == "color") {
+        } else if (buttonName === "color") {
             value = hex(target.style.backgroundColor);
-        } else if (buttonName == "highlight") {
+        } else if (buttonName === "highlight") {
             value = hex(target.style.backgroundColor);
             
             if (ie) {
@@ -609,8 +744,8 @@
 
     // checksum - returns a checksum using the Adler-32 method
     function checksum(text) {
-        var a = 1;
-        var b = 0;
+        var a = 1,
+            b = 0;
         
         for (var index = 0; index < text.length; ++index) {
             a = (a + text.charCodeAt(index)) % 65521;
@@ -644,45 +779,61 @@
         if (popupContent) {
             // Custom popup
             $popup.html(popupContent);
-        } else if (popupName == "color") {
+        } else if (popupName === "color") {
             // Color
-            var colors = options.colors.split(" ");
+            var colors = options.colors,
+                colorsLen = colors.length,
+                colorIdx = 0;
             
-            if (colors.length < 10) {
+            if (colorsLen < 10) {
                 $popup.width("auto");
             }
 
-            $.each(colors, function(idx, color) {
+            for (; colorIdx < colorsLen; colorIdx++) {
+                var color = colors[colorIdx];
                 $(DIV_TAG).appendTo($popup)
                     .css(BACKGROUND_COLOR, "#" + color);
-            });
+            }
             popupTypeClass = COLOR_CLASS;
-        } else if (popupName == "font") {
+        } else if (popupName === "font") {
             // Font
-            $.each(options.fonts.split(","), function(idx, font) {
+            var fonts = options.fonts,
+                fontsLen = fonts.length,
+                fontsIdx = 0;
+
+            for (; fontsIdx < fontsLen; fontsIdx++) {
+                var font = fonts[fontsIdx];
                 $(DIV_TAG).appendTo($popup)
                     .css("fontFamily", font)
                     .html(font);
-            });
-        } else if (popupName == "size") {
+            }
+        } else if (popupName === "size") {
             // Size
-            $.each(options.sizes.split(","), function(idx, size) {
+            var sizes = options.sizes,
+                sizesLen = sizes.length,
+                sizeIdx = 0;
+            for (; sizeIdx < sizesLen; sizeIdx++) {
+                var size = sizes[sizeIdx];
                 $(DIV_TAG).appendTo($popup)
                     .html("<font size=" + size + ">" + size + "</font>");
-            });
-        } else if (popupName == "style") {
+            }
+        } else if (popupName === "style") {
             // Style
-            $.each(options.styles, function(idx, style) {
+            var styles = options.styles,
+                stylesLen = styles.length,
+                styleIdx = 0;
+            for (; styleIdx < stylesLen; styleIdx++) {
+                var style = styles[styleIdx];
                 $(DIV_TAG).appendTo($popup)
                     .html(style[1] + style[0] + style[1].replace("<", "</"));
-            });
-        } else if (popupName == "url") {
+            }
+        } else if (popupName === "url") {
             // URL
-            $popup.html('Enter URL:<br><input type=text value="http://" size=35><br><input type=button value="Submit">');
+            $popup.html('Enter URL:<br /><input type="text" value="http://" size="35" /><br /><input type="button" value="Submit" />');
             popupTypeClass = PROMPT_CLASS;
-        } else if (popupName == "pastetext") {
+        } else if (popupName === "pastetext") {
             // Paste as Text
-            $popup.html('Paste your content here and click submit.<br /><textarea cols=40 rows=3></textarea><br /><input type=button value=Submit>');
+            $popup.html('Paste your content here and click submit.<br /><textarea cols="40" rows="3"></textarea><br /><input type="button" value="Submit" />');
             popupTypeClass = PROMPT_CLASS;
         }
 
@@ -820,8 +971,8 @@
     //   hex("#FF0000"); // #FF0000
     //   hex("#F00"); // #FF0000
     function hex(s) {
-        var m = /rgba?\((\d+), (\d+), (\d+)/.exec(s);
-        var c = s.split("");
+        var m = /rgba?\((\d+), (\d+), (\d+)/.exec(s),
+            c = s.split("");
 
         if (m) {
             s = ( m[1] << 16 | m[2] << 8 | m[3] ).toString(16);
@@ -831,7 +982,7 @@
             }
         }
 
-        return "#" + (s.length == 6 ? s : c[1] + c[1] + c[2] + c[2] + c[3] + c[3]);
+        return "#" + (s.length === 6 ? s : c[1] + c[1] + c[2] + c[2] + c[3] + c[3]);
     }
 
     // hidePopups - hides all popups
@@ -846,8 +997,8 @@
 
     // imagesPath - returns the path to the images folder
     function imagesPath() {
-        var cssFile = "jquery.cleditor.css";
-        var href = $("link[href$='" + cssFile +"']").attr("href");
+        var cssFile = "jquery.cleditor.css",
+            href = $("link[href$='" + cssFile +"']").attr("href");
 
         return href.substr(0, href.length - cssFile.length) + "images/";
     }
@@ -859,8 +1010,8 @@
 
     // refresh - creates the iframe and resizes the controls
     function refresh(editor) {
-        var $main = editor.$main;
-        var options = editor.options;
+        var $main = editor.$main,
+            options = editor.options;
 
         // Remove the old iframe
         if (editor.$frame) {
@@ -878,16 +1029,16 @@
             return;
         }
         
-        var doc = editor.doc = contentWindow.document;
-        var $doc = $(doc);
+        var doc = editor.doc = contentWindow.document,
+            $doc = $(doc),
+            genhtml = options.docType + '<html><head>';
 
         doc.open();
-        doc.write(
-            options.docType +
-            '<html>' +
-            ((options.docCSSFile === '') ? '' : '<head><link rel="stylesheet" type="text/css" href="' + options.docCSSFile + '" /></head>') +
-            '<body style="' + options.bodyStyle + '"></body></html>'
-            );
+        for (var i = 0; i < options.docCSSFile.length; i++) {
+          genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
+        }
+        genhtml += '</head><body style="' + options.bodyStyle + '"></body></html>';
+        doc.write(genhtml);
         doc.close();
 
         // Work around for bug in IE which causes the editor to lose
@@ -908,9 +1059,9 @@
             // before the beforeactivate event.
             $doc.bind("beforedeactivate beforeactivate selectionchange keypress", function(e) {
                 // Flag the editor as inactive
-                if (e.type == "beforedeactivate") {
+                if (e.type === "beforedeactivate") {
                     editor.inactive = true;
-                } else if (e.type == "beforeactivate") {
+                } else if (e.type === "beforeactivate") {
                     // Get rid of the bogus selection and flag the editor as active
                     if (!editor.inactive && editor.range && editor.range.length > 1) {
                         editor.range.shift();
@@ -958,9 +1109,9 @@
 
         // Wait for the layout to finish - shortcut for $(document).ready()
         $(function() {
-            var $toolbar = editor.$toolbar;
-            var $group = $toolbar.children("div:last");
-            var width = $main.width();
+            var $toolbar = editor.$toolbar,
+                $group = $toolbar.children("div:last"),
+                width = $main.width();
 
             // Resize the toolbar
             var height = $group.offset().top + $group.outerHeight() - $toolbar.offset().top + 1;
@@ -1003,10 +1154,10 @@
         // Loop through each button
         var inSourceMode = sourceMode(editor);
         $.each(editor.$toolbar.find("." + BUTTON_CLASS), function(idx, elem) {
-            var $elem = $(elem);
-            var button = $.cleditor.buttons[$.data(elem, BUTTON_NAME)];
-            var command = button.command;
-            var enabled = true;
+            var $elem = $(elem),
+                button = $.cleditor.buttons[$.data(elem, BUTTON_NAME)],
+                command = button.command,
+                enabled = true;
 
             // Determine the state
             if (editor.disabled) {
@@ -1027,16 +1178,16 @@
                 if (enabled === undefined) {
                     enabled = true;
                 }
-            } else if (((inSourceMode || iOS) && button.name != "source") ||
-                        (ie && (command == "undo" || command == "redo"))) {
+            } else if (((inSourceMode || iOS) && button.name !== "source") ||
+                        (ie && (command === "undo" || command === "redo"))) {
                 enabled = false;
-            } else if (command && command != "print") {
-                if (ie && command == "hilitecolor") {
+            } else if (command && command !== "print") {
+                if (ie && command === "hilitecolor") {
                     command = "backcolor";
                 }
 
                 // IE does not support inserthtml, so it's always enabled
-                if (!ie || command != "inserthtml") {
+                if (!ie || command !== "inserthtml") {
                     try {
                         enabled = queryObj.queryCommandEnabled(command);
                     } catch (err) {
@@ -1113,10 +1264,10 @@
 
     // showPopup - shows a popup
     function showPopup(editor, popup, button) {
-        var offset;
-        var left;
-        var top;
-        var $popup = $(popup);
+        var offset,
+            left,
+            top,
+            $popup = $(popup);
 
         // Determine the popup location
         if (button) {
@@ -1162,17 +1313,17 @@
 
     // updateFrame - updates the iframe with the textarea contents
     function updateFrame(editor, checkForChange) {
-        var code = editor.$area.val();
-        var options = editor.options;
-        var updateFrameCallback = options.updateFrame;
-        var $body = $(editor.doc.body);
+        var code = editor.$area.val(),
+            options = editor.options,
+            updateFrameCallback = options.updateFrame,
+            $body = $(editor.doc.body);
 
         // Check for textarea change to avoid unnecessary firing
         // of potentially heavy updateFrame callbacks.
         if (updateFrameCallback) {
             var sum = checksum(code);
 
-            if (checkForChange && editor.areaChecksum == sum) {
+            if (checkForChange && editor.areaChecksum === sum) {
                 return;
             }
             
@@ -1183,10 +1334,10 @@
         var html = updateFrameCallback ? updateFrameCallback(code) : code;
 
         // Prevent script injection attacks by html encoding script tags
-				if(options.script){
-							 // Prevent script injection attacks by html encoding script tags
-				       html = html.replace(/<(?=\/?script)/ig, "&lt;");
-				} 
+        if (options.script) {
+            // Prevent script injection attacks by html encoding script tags
+            html = html.replace(/<(?=\/?script)/ig, "&lt;");
+        } 
 
         // Update the iframe checksum
         if (options.updateTextArea) {
@@ -1195,20 +1346,21 @@
 
         // Update the iframe and trigger the change event
         if (html != $body.html()) {
-			      if(ie){
-			        var doc = editor.doc;
-			        doc.open();
-			        doc.write(
-			          options.docType +
-			          '<html>' +
-			          ((options.docCSSFile === '') ? '' : '<head><link rel="stylesheet" type="text/css" href="' + options.docCSSFile + '" /></head>') +
-			          '<body style="' + options.bodyStyle + '">' +
-			          html + '</body></html>'
-			        );
-			        doc.close();
-			      } else {
-			        $body.html(html);
-			      } 
+            if (ie) {
+                var doc = editor.doc,
+                    genhtml = options.docType + '<html><head>';
+
+                for (var i = 0; i < options.docCSSFile.length; i++) {
+                    genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
+                }
+                genhtml += '</head><body style="' + options.bodyStyle + '">' + html + '</body></html>';
+
+                doc.open();
+                doc.write(genhtml);
+                doc.close();
+            } else {
+                $body.html(html);
+            }
             $(editor).triggerHandler(CHANGE);
         }
   }
@@ -1263,7 +1415,10 @@
   // selectedText - returns the current text selection or and empty string
   function selectedText(editor) {
     restoreRange(editor);
-    if (ie) return getRange(editor).text;
+    if (ie) {
+        return getRange(editor).text;
+    }
+
     return getSelection(editor).toString();
   }
 
@@ -1296,17 +1451,17 @@
 
     // updateTextArea - updates the textarea with the iframe contents
     function updateTextArea(editor, checkForChange) {
-        var html = $(editor.doc.body).html();
-        var options = editor.options;
-        var updateTextAreaCallback = options.updateTextArea;
-        var $area = editor.$area;
+        var html = $(editor.doc.body).html(),
+            options = editor.options,
+            updateTextAreaCallback = options.updateTextArea,
+            $area = editor.$area;
 
         // Check for iframe change to avoid unnecessary firing
         // of potentially heavy updateTextArea callbacks.
         if (updateTextAreaCallback) {
             var sum = checksum(html);
 
-            if (checkForChange && editor.frameChecksum == sum) {
+            if (checkForChange && editor.frameChecksum === sum) {
                 return;
             }
             
@@ -1322,7 +1477,7 @@
         }
 
         // Update the textarea and trigger the change event
-        if (code != $area.val()) {
+        if (code !== $area.val()) {
             $area.val(code);
             $(editor).triggerHandler(CHANGE);
         }
