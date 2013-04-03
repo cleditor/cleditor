@@ -15,6 +15,7 @@
     $.cleditor = {
         // Define the defaults used for all new cleditor instances
         defaultOptions: {
+            disabled:   false,
             width:      500, // width not including margins, borders or padding
             height:     250, // height not including margins, borders or padding
             controls:   // controls to add to the toolbar
@@ -142,7 +143,6 @@
     DISABLED         = "disabled",
     DIV_TAG          = "<div>",
     TRANSPARENT      = "transparent",
-    UNSELECTABLE     = "unselectable",
 
     // Class name constants
     MAIN_CLASS       = "cleditorMain",    // main containing div
@@ -156,10 +156,11 @@
     COLOR_CLASS      = "cleditorColor",   // color popup div inside body
     PROMPT_CLASS     = "cleditorPrompt",  // prompt popup divs inside body
     MSG_CLASS        = "cleditorMsg",     // message popup div inside body
+    UNSELECTABLE_CLASS = "cleditorUnselectable",
 
     // Test for ie
-    ie = $.browser.msie,
-    ie6 = /msie\s6/i.test(navigator.userAgent),
+    ie = /msie/i.test(navigator.userAgent),
+    ie6boxmodel = $.support.boxModel,
 
     // Test for iPhone/iTouch/iPad
     iOS = /iphone|ipad|ipod/i.test(navigator.userAgent),
@@ -268,6 +269,7 @@
                 var $buttonDiv = $(DIV_TAG)
                                     .data(BUTTON_NAME, button.name)
                                     .addClass(BUTTON_CLASS)
+                                    .addClass(UNSELECTABLE_CLASS)
                                     .attr("title", button.title)
                                     .bind(CLICK, $.proxy(buttonClick, editor))
                                     .appendTo($group)
@@ -287,11 +289,6 @@
                 }
                 
                 $buttonDiv.css(map);
-
-                // Add the unselectable attribute for ie
-                if (ie) {
-                    $buttonDiv.attr(UNSELECTABLE, "on");
-                }
 
                 // Create the popup
                 if (button.popupName) {
@@ -697,11 +694,9 @@
         $popup.addClass(popupTypeClass);
 
         // Add the unselectable attribute to all items
-        if (ie) {
-            $popup.attr(UNSELECTABLE, "on")
-                .find("div,font,p,h1,h2,h3,h4,h5,h6")
-                .attr(UNSELECTABLE, "on");
-        }
+        $popup.addClass(UNSELECTABLE_CLASS)
+            .find("div,font,p,h1,h2,h3,h4,h5,h6")
+            .addClass(UNSELECTABLE_CLASS);
 
         // Add the hover effect to all items
         if ($popup.hasClass(LIST_CLASS) || popupHover === true) {
@@ -879,6 +874,10 @@
 
         // Load the iframe document content
         var contentWindow = $frame[0].contentWindow;
+        if (!contentWindow) {
+            return;
+        }
+        
         var doc = editor.doc = contentWindow.document;
         var $doc = $(doc);
 
@@ -968,16 +967,17 @@
             $toolbar.height(height);
 
             // Resize the iframe
-            height = (/%/.test("" + options.height) ?
-                        $main.height() : parseInt(options.height)) - height;
+            // height = (/%/.test("" + options.height) ?
+            //            $main.height() : parseInt(options.height)) - height;
+            hgt = $main.height() - hgt;
             $frame.width(width).height(height);
 
             // Resize the textarea. IE6 textareas have a 1px top
             // & bottom margin that cannot be removed using css.
-            editor.$area.width(width).height(ie6 ? height - 2 : height);
+            editor.$area.width(width).height(ie6boxmodel ? height - 2 : height);
 
             // Switch the iframe into design mode if enabled
-            disable(editor, editor.disabled);
+            disable(editor, editor.options.disabled);
 
             // Enable or disable the toolbar buttons
             refreshButtons(editor);
