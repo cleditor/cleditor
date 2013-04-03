@@ -19,10 +19,11 @@
             width:      500, // width not including margins, borders or padding
             height:     250, // height not including margins, borders or padding
             controls:   // controls to add to the toolbar
-                        [ "bold", "italic", "underline", "strikethrough", "subscript", "superscript", "|", "font", "size",
-                          "style", "|", "color", "highlight", "removeformat", "|", "bullets", "numbering", "|", "outdent",
-                          "indent", "|", "alignleft", "center", "alignright", "justify", "|", "undo", "redo", "|",
-                          "rule", "image", "link", "unlink", "|", "cut", "copy", "paste", "pastetext", "|", "print", "imagegallery", "source" ],
+                        [ "bold", "italic", "underline", "strikethrough", "subscript", "superscript", "|", "classname",
+                          "style", "|", "color", "highlight", "removeformat", "|", "bullets", "numbering", "|",
+                          "outdent", "indent", "|", "alignleft", "center", "alignright", "justify", "|", "undo",
+                          "redo", "|", "rule", "image", "link", "unlink", "|", "cut", "copy", "paste", "pastetext",
+                          "|", "print", "imagegallery", "source" ],
             colors:     // colors in the color popup
                         [ "FFF", "FCC", "FC9", "FF9", "FFC", "9F9", "9FF", "CFF", "CCF", "FCF", "CCC", "F66", "F96",
                           "FF6", "FF3", "6F9", "3FF", "6FF", "99F", "F9F", "BBB", "F00", "F90", "FC6", "FF0", "3F3",
@@ -30,22 +31,21 @@
                           "C3C", "666", "900", "C60", "C93", "990", "090", "399", "33F", "60C", "939", "333", "600",
                           "930", "963", "660", "060", "366", "009", "339", "636", "000", "300", "630", "633", "330",
                           "030", "033", "006", "309", "303" ],
-            fonts:      // font names in the font popup
-                        [ "Arial", "Arial Black", "Comic Sans MS", "Courier New", "Narrow", "Garamond",
-                          "Georgia", "Impact", "Sans Serif", "Serif", "Tahoma", "Trebuchet MS", "Verdana" ],
-            sizes:      // sizes in the font size popup
-                        [ 1, 2, 3, 4, 5, 6, 7],
+            classes:    // class names in the class popup
+                        [ [ "Calibri", "font-calibri" ], [ "Courier New", "font-courier-new" ],
+                          [ "Garamond", "font-garamond" ], [ "Georgia", "font-georgia" ],
+                          [ "Helvetica", "font-helvetica" ], [ "Tahoma", "font-tahoma" ],
+                          [ "Times New Roman", "font-times-new-roman" ], [ "Trebuchet Ms", "font-trebuchet-ms" ],
+                          [ "Verdana", "font-verdana" ] ],
             styles:     // styles in the style popup
-                        [ [ "Paragraph", "<p>" ], [ "Header 1", "<h1>" ], [ "Header 2", "<h2>" ],
-                          [ "Header 3", "<h3>" ], [ "Header 4", "<h4>" ], [ "Header 5", "<h5>" ],
-                          [ "Header 6", "<h6>" ], [ "Quote", "<blockquote>" ], [ "Fixed", "<pre>" ] ],
+                        [ [ "Paragraph", "<p>" ], [ "Quote", "<blockquote>" ], [ "Fixed", "<pre>" ],
+                          [ "Header 1", "<h1>" ], [ "Header 2", "<h2>" ], [ "Header 3", "<h3>" ],
+                          [ "Header 4", "<h4>" ], [ "Header 5", "<h5>" ], [ "Header 6", "<h6>" ] ],
             useCSS:     true, // use CSS to style HTML when possible (not supported in ie)
             docType:    // Document type contained within the editor
                         '<!DOCTYPE html>',
             docCSSFile: // CSS file used to style the document contained within the editor
-                        [],
-            bodyStyle:  // style to assign to document body contained within the editor
-                        "margin:4px; font:10pt Arial,Verdana; cursor:text",
+                        [ "jquery.cleditor.editor.css" ],
             script:     false,
 			runScript:  false, 
             galleryUploadsPath: // path used by image gallery to retrieve image information from the server.
@@ -98,19 +98,12 @@
                 title: "Superscript",
                 command: "superscript"
             },
-            font: {
+            classname: {
                 image: "cleditorSprite font-icon",
-                name: "font",
-                title: "Font",
-                command: "fontname",
-                popupName: "font"
-            },
-            size: {
-                image: "cleditorSprite size-icon",
-                name: "size",
-                title: "Font Size",
-                command: "fontsize",
-                popupName: "size"
+                name: "classname",
+                title: "Class",
+                command: "surroundhtml",
+                popupName: "classname"
             },
             style: {
                 image: "cleditorSprite style-icon",
@@ -260,7 +253,7 @@
                 image: "cleditorSprite imagegallery-icon",
                 name: "imagegallery",
                 title: "Image Gallery",
-                command: "insertImage",
+                command: "insertimage",
                 popupName: "imagegallery"
             },
             source: {
@@ -394,7 +387,7 @@
         for (var i = 0; i < controlLength; i++) {
             var buttonName = toolBarControls[i];
 
-            if (buttonName == "|") {
+            if (buttonName === "|") {
                 // Divider
                 
                 // Add a new divider to the group
@@ -412,7 +405,7 @@
                 // Get the button definition
                 var button = buttons[buttonName];
 
-                if (typeof button == 'undefined') {
+                if (typeof button === "undefined") {
                     throw "Button Name:" + buttonName + " is undefined";
                 }
 
@@ -420,12 +413,10 @@
                 var $buttonDiv = $(DIV_TAG)
                                     .data(BUTTON_NAME, button.name)
                                     .addClass(BUTTON_CLASS)
-                                    .addClass(UNSELECTABLE_CLASS)
                                     .addClass(button.image)
                                     .attr("title", button.title)
                                     .bind(CLICK, $.proxy(buttonClick, editor))
-                                    .appendTo($group)
-                                    .hover(hoverEnter, hoverLeave);
+                                    .appendTo($group);
 
                 // Prepare the button image
                 var map = {};
@@ -460,12 +451,12 @@
 		}
 
         // Bind the window resize event when the width or height is auto or %
-       if (/auto|%/.test("" + options.width + options.height)) {
-		editor.windowResizeListener = function() { refresh(editor); };
-	    $(window).resize(editor.windowResizeListener);
-       }
+        if (/auto|%/.test("" + options.width + options.height)) {
+            editor.windowResizeListener = function() { refresh(editor); };
+            $(window).resize(editor.windowResizeListener);
+        }
 
-       editors.push(editor); 
+        editors.push(editor); 
 
         // Create the imageGallery DOM content.
         imageGallery.create();
@@ -478,33 +469,33 @@
     // Public Methods
     //===============
 
-    var fn = cleditor.prototype,
-
     // Expose the following private functions as methods on the cleditor object.
     // The closure compiler will rename the private functions. However, the
     // exposed method names on the cleditor object will remain fixed.
     methods = [
-        ["clear", clear],
-        ["disable", disable],
-        ["execCommand", execCommand],
-        ["focus", focus],
-        ["hidePopups", hidePopups],
-        ["sourceMode", sourceMode, true],
-        ["refresh", refresh],
-        ["text", text, true],
-        ["html", html, true],
-        ["content", content, true],
-        ["wordcount", wordcount, true],
-        ["select", select],
-        ["selectedHTML", selectedHTML, true],
-        ["selectedText", selectedText, true],
-        ["showMessage", showMessage],
-        ["updateFrame", updateFrame],
-        ["updateTextArea", updateTextArea]
+        [ "clear", clear ],
+        [ "disable", disable ],
+        [ "execCommand", execCommand ],
+        [ "focus", focus ],
+        [ "hidePopups", hidePopups ],
+        [ "sourceMode", sourceMode, true ],
+        [ "refresh", refresh ],
+        [ "text", text, true ],
+        [ "html", html, true ],
+        [ "content", content, true ],
+        [ "wordcount", wordcount, true ],
+        [ "select", select ],
+        [ "surroundHTML", surroundHTML ],
+        [ "pasteHTML", pasteHTML ],
+        [ "selectedHTML", selectedHTML, true ],
+        [ "selectedText", selectedText, true ],
+        [ "showMessage", showMessage ],
+        [ "updateFrame", updateFrame ],
+        [ "updateTextArea", updateTextArea ]
     ];
 
     $.each(methods, function(idx, method) {
-        fn[method[0]] = function() {
+        cleditor.prototype[method[0]] = function() {
             var editor = this,
                 args = [editor];
 
@@ -524,7 +515,7 @@
     });
 
     // change - shortcut for .bind("change", handler) or .trigger("change")
-    fn.change = function(handler) {
+    cleditor.prototype.change = function(handler) {
         var $this = $(this);
         
         return handler ? $this.bind(CHANGE, handler) : $this.trigger(CHANGE);
@@ -630,7 +621,7 @@
                                 text = $textarea.val().replace(/\n/g, "<br />");
 
                             if (text !== "") {
-                                execCommand(editor, data.command, text, null, data.button);
+                                pasteHTML(editor, text);
                             }
 
                             // Reset the text, hide the popup and set focus
@@ -667,17 +658,6 @@
         focus(editor);
     }
 
-    // hoverEnter - mouseenter event handler for buttons and popup items
-    function hoverEnter(e) {
-        var $div = $(e.target).closest("div");
-        $div.css(BACKGROUND_COLOR, $div.data(BUTTON_NAME) ? "#FFF" : "#FFC");
-    }
-
-    // hoverLeave - mouseleave event handler for buttons and popup items
-    function hoverLeave(e) {
-        $(e.target).closest("div").css(BACKGROUND_COLOR, TRANSPARENT);
-    }
-
     // popupClick - click event handler for popup items
     function popupClick(e) {
         var editor = this,
@@ -698,15 +678,8 @@
             useCSS = editor.options.useCSS;
 
         // Get the command value
-        if (buttonName === "font") {
-            // Opera returns the fontfamily wrapped in quotes
-            value = target.style.fontFamily.replace(/"/g, "");
-        } else if (buttonName === "size") {
-            if (target.tagName === "DIV") {
-                target = target.children[0];
-            }
-            
-            value = target.innerHTML;
+        if (buttonName === "classname") {
+            value = '<span class="' + target.className + '">|</span>';
         } else if (buttonName === "style") {
             value = "<" + target.tagName + ">";
         } else if (buttonName === "color") {
@@ -804,27 +777,16 @@
                     .css(BACKGROUND_COLOR, "#" + color);
             }
             popupTypeClass = COLOR_CLASS;
-        } else if (popupName === "font") {
-            // Font
-            var fonts = options.fonts,
-                fontsLen = fonts.length,
-                fontsIdx = 0;
+        } else if (popupName === "classname") {
+            // Class
+            var classes = options.classes,
+                classesLen = classes.length,
+                classesIdx = 0;
 
-            for (; fontsIdx < fontsLen; fontsIdx++) {
-                var font = fonts[fontsIdx];
+            for (; classesIdx < classesLen; classesIdx++) {
+                var className = classes[classesIdx];
                 $(DIV_TAG).appendTo($popup)
-                    .css("fontFamily", font)
-                    .html(font);
-            }
-        } else if (popupName === "size") {
-            // Size
-            var sizes = options.sizes,
-                sizesLen = sizes.length,
-                sizeIdx = 0;
-            for (; sizeIdx < sizesLen; sizeIdx++) {
-                var size = sizes[sizeIdx];
-                $(DIV_TAG).appendTo($popup)
-                    .html("<font size=" + size + ">" + size + "</font>");
+                    .html('<div class="' + className[1] + '">' + className[0] + '</div>');
             }
         } else if (popupName === "style") {
             // Style
@@ -854,14 +816,7 @@
         $popup.addClass(popupTypeClass);
 
         // Add the unselectable attribute to all items
-        $popup.addClass(UNSELECTABLE_CLASS)
-            .find("div,font,p,h1,h2,h3,h4,h5,h6")
-            .addClass(UNSELECTABLE_CLASS);
-
-        // Add the hover effect to all items
-        if ($popup.hasClass(LIST_CLASS) || popupHover === true) {
-            $popup.children().hover(hoverEnter, hoverLeave);
-        }
+        $popup.addClass(UNSELECTABLE_CLASS);
 
         // Add the popup to the array and return it
         popups[popupName] = $popup[0];
@@ -915,7 +870,10 @@
         // Execute the command and check for error
         var success = true, description;
 
-        if (ie && command.toLowerCase() == "inserthtml") {
+        if (command.toLowerCase() === "surroundhtml") {
+            var tags = value.split('|');
+            editor.surroundHTML(tags[0], tags[1]);
+        } else if (ie && command.toLowerCase() === "inserthtml") {
             getRange(editor).pasteHTML(value);
         } else {
             try {
@@ -1046,7 +1004,7 @@
         for (var i = 0; i < options.docCSSFile.length; i++) {
           genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
         }
-        genhtml += '</head><body style="' + options.bodyStyle + '"></body></html>';
+        genhtml += '</head><body></body></html>';
         doc.write(genhtml);
         doc.close();
 
@@ -1196,7 +1154,7 @@
                 }
 
                 // IE does not support inserthtml, so it's always enabled
-                if (!ie || command !== "inserthtml") {
+                if ((!ie || command !== "inserthtml") && command !== "surroundhtml") {
                     try {
                         enabled = queryObj.queryCommandEnabled(command);
                     } catch (err) {
@@ -1253,6 +1211,14 @@
                 execCommand(editor, "selectall");
             }
         }, 0);
+    }
+    
+    function surroundHTML(editor, prefix, suffix) {
+        editor.pasteHTML(prefix + editor.selectedHTML() + suffix);
+    }
+
+    function pasteHTML(editor, text) {
+        editor.execCommand("inserthtml", text, editor.options.useCSS, null);
     }
 
     // selectedHTML - returns the current HTML selection or and empty string
@@ -1383,7 +1349,7 @@
                 for (var i = 0; i < options.docCSSFile.length; i++) {
                     genhtml += '<link rel="stylesheet" type="text/css" href="' + options.docCSSFile[i] + '" />';
                 }
-                genhtml += '</head><body style="' + options.bodyStyle + '">' + html + '</body></html>';
+                genhtml += '</head><body>' + html + '</body></html>';
 
                 doc.open();
                 doc.write(genhtml);
@@ -1539,7 +1505,7 @@
             $('a.insert-img', $row)
                 .click(function() {
                     that.hide();
-                    execCommand(editor, 'insertImage', url, false, 'Image gallery');
+                    execCommand(editor, 'insertimage', url, false, 'Image gallery');
 
                     return false;
             });
@@ -1561,7 +1527,7 @@
 		}
 
 		// Perform additional cleanup if no editors are left
-		if (editors.length == 0) {
+		if (editors.length === 0) {
 		  // Unbind document click listener
 		  $(document).unbind('click', documentClickEventListener);
 		  documentClickEventListener = undefined;

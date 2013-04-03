@@ -49,9 +49,13 @@
     cursor: default;
     z-index: 10000;
 }
-.cleditorList div {
-    padding:2px 4px 2px 4px;
+.cleditorList > div {
+    padding: 2px 4px 2px 4px;
 }
+.cleditorList > div:hover {
+    background: #FFC;
+}
+
 .cleditorList p,
 .cleditorList h1,
 .cleditorList h2,
@@ -192,7 +196,7 @@
 .size-icon { background-position: -168px -1px; }
 .style-icon { background-position: -192px -1px; }
 .color-icon { background-position: -216px -1px; }
-.hightlight-icon { background-position: -240px -1px; }
+.highlight-icon { background-position: -240px -1px; }
 .removeformat-icon { background-position: -264px -1px; }
 .bullets-icon { background-position: -288px -0px; }
 .numbering-icon { background-position: -312px -0px; }
